@@ -1,12 +1,16 @@
 import { create } from "zustand";
 
+export type UserRole = "superadmin" | "admin";
+
 interface AuthState {
     isAuthenticated: boolean;
-    user: { email: string; role: string } | null;
+    user: { email: string; role: UserRole } | null;
     token: string | null;
-    login: (token: string, user: { email: string; role: string }) => void;
+    login: (token: string, user: { email: string; role: UserRole }) => void;
     logout: () => void;
 }
+
+export const isSuperAdmin = (user: { role: UserRole } | null) => user?.role === "superadmin";
 
 export const useAuthStore = create<AuthState>((set) => ({
     isAuthenticated: !!localStorage.getItem("admin_token"),

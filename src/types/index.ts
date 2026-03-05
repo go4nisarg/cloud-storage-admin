@@ -98,6 +98,7 @@ export interface ReportedItem {
         id: string;
         name: string;
         type: string;
+        url?: string;
     };
     owner: {
         id: string;

@@ -5,7 +5,8 @@ import { calculateUserStorage, formatDate, formatSize, SizeUnits } from "../util
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "../components/ui/card";
 import { Badge } from "../components/ui/badge";
 import { Button } from "../components/ui/button";
-import { ArrowLeft, User as UserIcon, Shield, Mail, Phone, Calendar, HardDrive, FileText, Image, Video, Music, Archive, Trash2, RefreshCw } from "lucide-react";
+import { ArrowLeft, User as UserIcon, Shield, Mail, Phone, Calendar, HardDrive, FileText, Image, Video, Music, Archive, Trash2, RefreshCw, ChevronRight, Eye } from "lucide-react";
+import { useAuthStore, isSuperAdmin } from "../store/auth.store";
 import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip, Legend, BarChart, Bar, XAxis, YAxis, CartesianGrid } from "recharts";
 
 const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#64748b'];
@@ -14,6 +15,8 @@ export const UserDetails = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
     const { fetchUserDetails, selectedUser, loading, error } = useUsersStore();
+    const user = useAuthStore(state => state.user);
+    const superAdmin = isSuperAdmin(user);
 
     useEffect(() => {
         if (id) {
@@ -52,7 +55,7 @@ export const UserDetails = () => {
     const chartData = getChartData();
 
     const engagementData = [
-        { name: 'Engagement', Views: selectedUser?.totalViews, Downloads: selectedUser?.totalDownloads }
+        { name: 'Engagement', Views: selectedUser?.totalViews, Downloads: selectedUser?.totalDownloads, Affiliates: selectedUser?.referenceUserCount }
     ];
 
     return (
@@ -83,7 +86,7 @@ export const UserDetails = () => {
                             <div className="flex items-center gap-4">
                                 <div className="h-16 w-16 relative rounded-2xl shadow-sm overflow-hidden flex-shrink-0">
                                     <div className="absolute inset-0 bg-gradient-to-br from-blue-500 to-indigo-600 text-white flex items-center justify-center text-2xl font-bold">
-                                        {selectedUser.name.charAt(0)}
+                                        {(selectedUser.name ?? '?').charAt(0)}
                                     </div>
                                     {selectedUser.profilePic && (
                                         <img
@@ -152,7 +155,7 @@ export const UserDetails = () => {
                         <CardTitle>Engagement Summary</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <div className="grid grid-cols-2 gap-4 mb-6">
+                        <div className="grid grid-cols-3 gap-4 mb-6">
                             <div className="bg-orange-50/50 dark:bg-orange-950/20 p-5 rounded-2xl border border-orange-100 dark:border-orange-900/30">
                                 <div className="text-orange-600/80 dark:text-orange-500/80 font-semibold text-xs tracking-wider uppercase mb-1">Total Views</div>
                                 <div className="text-3xl font-bold text-orange-600 dark:text-orange-400">{selectedUser?.totalViews}</div>
@@ -160,6 +163,14 @@ export const UserDetails = () => {
                             <div className="bg-teal-50/50 dark:bg-teal-950/20 p-5 rounded-2xl border border-teal-100 dark:border-teal-900/30">
                                 <div className="text-teal-600/80 dark:text-teal-500/80 font-semibold text-xs tracking-wider uppercase mb-1">Total Downloads</div>
                                 <div className="text-3xl font-bold text-teal-600 dark:text-teal-400">{selectedUser?.totalDownloads}</div>
+                            </div>
+                            <div
+                                className="bg-purple-50/50 dark:bg-purple-950/20 p-5 rounded-2xl border border-purple-100 dark:border-purple-900/30 cursor-pointer hover:bg-purple-100/60 dark:hover:bg-purple-950/40 transition-colors relative"
+                                onClick={() => navigate(`/user/${id}/affiliates`)}
+                            >
+                                <div className="font-semibold text-xs tracking-wider uppercase mb-1" style={{ color: '#9333ea99' }}>Affiliates</div>
+                                <div className="text-3xl font-bold" style={{ color: '#9333ea' }}>{selectedUser?.referenceUserCount}</div>
+                                <Eye className="absolute top-3 right-3 w-4 h-4 opacity-40" style={{ color: '#9333ea' }} />
                             </div>
                         </div>
 
@@ -173,6 +184,7 @@ export const UserDetails = () => {
                                     <Legend iconType="circle" />
                                     <Bar dataKey="Views" fill="#f97316" radius={[0, 6, 6, 0]} maxBarSize={30} />
                                     <Bar dataKey="Downloads" fill="#14b8a6" radius={[0, 6, 6, 0]} maxBarSize={30} />
+                                    <Bar dataKey="Affiliates" fill="#9333ea" radius={[0, 6, 6, 0]} maxBarSize={30} />
                                 </BarChart>
                             </ResponsiveContainer>
                         </div>
@@ -243,26 +255,28 @@ export const UserDetails = () => {
                                     </div>
 
                                     <div className="space-y-4 pt-2">
-                                        <div className="flex justify-between text-sm items-center hover:bg-slate-100 dark:hover:bg-slate-800 p-1.5 -mx-1.5 rounded-lg transition-colors">
-                                            <div className="flex items-center gap-3"><div className="p-1.5 bg-blue-100 dark:bg-blue-900/50 rounded-md"><Image className="w-4 h-4 text-blue-600" /></div> <span className="font-medium">Images</span></div>
-                                            <span className="font-semibold">{formatSize(storage.breakdown.images, SizeUnits.Bytes)}</span>
-                                        </div>
-                                        <div className="flex justify-between text-sm items-center hover:bg-slate-100 dark:hover:bg-slate-800 p-1.5 -mx-1.5 rounded-lg transition-colors">
-                                            <div className="flex items-center gap-3"><div className="p-1.5 bg-emerald-100 dark:bg-emerald-900/50 rounded-md"><Video className="w-4 h-4 text-emerald-600" /></div> <span className="font-medium">Videos</span></div>
-                                            <span className="font-semibold">{formatSize(storage.breakdown.videos, SizeUnits.Bytes)}</span>
-                                        </div>
-                                        <div className="flex justify-between text-sm items-center hover:bg-slate-100 dark:hover:bg-slate-800 p-1.5 -mx-1.5 rounded-lg transition-colors">
-                                            <div className="flex items-center gap-3"><div className="p-1.5 bg-amber-100 dark:bg-amber-900/50 rounded-md"><Music className="w-4 h-4 text-amber-600" /></div> <span className="font-medium">Audio</span></div>
-                                            <span className="font-semibold">{formatSize(storage.breakdown.audio, SizeUnits.Bytes)}</span>
-                                        </div>
-                                        <div className="flex justify-between text-sm items-center hover:bg-slate-100 dark:hover:bg-slate-800 p-1.5 -mx-1.5 rounded-lg transition-colors">
-                                            <div className="flex items-center gap-3"><div className="p-1.5 bg-rose-100 dark:bg-rose-900/50 rounded-md"><Archive className="w-4 h-4 text-rose-600" /></div> <span className="font-medium">Zip</span></div>
-                                            <span className="font-semibold">{formatSize(storage.breakdown.zip, SizeUnits.Bytes)}</span>
-                                        </div>
-                                        <div className="flex justify-between text-sm items-center hover:bg-slate-100 dark:hover:bg-slate-800 p-1.5 -mx-1.5 rounded-lg transition-colors">
-                                            <div className="flex items-center gap-3"><div className="p-1.5 bg-indigo-100 dark:bg-indigo-900/50 rounded-md"><FileText className="w-4 h-4 text-indigo-600" /></div> <span className="font-medium">Documents</span></div>
-                                            <span className="font-semibold">{formatSize(storage.breakdown.documents, SizeUnits.Bytes)}</span>
-                                        </div>
+                                        {[
+                                            { label: "Images",    fileType: "images",    size: storage.breakdown.images,    icon: <Image className="w-4 h-4 text-blue-600" />,    iconBg: "bg-blue-100 dark:bg-blue-900/50" },
+                                            { label: "Videos",    fileType: "videos",    size: storage.breakdown.videos,    icon: <Video className="w-4 h-4 text-emerald-600" />, iconBg: "bg-emerald-100 dark:bg-emerald-900/50" },
+                                            { label: "Audio",     fileType: "audio",     size: storage.breakdown.audio,     icon: <Music className="w-4 h-4 text-amber-600" />,   iconBg: "bg-amber-100 dark:bg-amber-900/50" },
+                                            { label: "Zip",       fileType: "zip",       size: storage.breakdown.zip,       icon: <Archive className="w-4 h-4 text-rose-600" />,  iconBg: "bg-rose-100 dark:bg-rose-900/50" },
+                                            { label: "Documents", fileType: "documents", size: storage.breakdown.documents, icon: <FileText className="w-4 h-4 text-indigo-600" />, iconBg: "bg-indigo-100 dark:bg-indigo-900/50" },
+                                        ].map(({ label, fileType, size, icon, iconBg }) => (
+                                            <div
+                                                key={fileType}
+                                                className={`flex justify-between text-sm items-center p-1.5 -mx-1.5 rounded-lg transition-colors hover:bg-slate-100 dark:hover:bg-slate-800 ${superAdmin ? "cursor-pointer" : ""}`}
+                                                onClick={() => superAdmin && navigate(`/user/${id}/files/${fileType}`)}
+                                            >
+                                                <div className="flex items-center gap-3">
+                                                    <div className={`p-1.5 ${iconBg} rounded-md`}>{icon}</div>
+                                                    <span className="font-medium">{label}</span>
+                                                </div>
+                                                <div className="flex items-center gap-2">
+                                                    <span className="font-semibold">{formatSize(size, SizeUnits.Bytes)}</span>
+                                                    {superAdmin && <ChevronRight className="w-4 h-4 text-slate-400" />}
+                                                </div>
+                                            </div>
+                                        ))}
                                         <div className="pt-3 mt-3 border-t border-slate-200/80 dark:border-slate-700/80 hover:bg-slate-100 dark:hover:bg-slate-800 p-1.5 -mx-1.5 rounded-lg transition-colors">
                                             <div className="flex justify-between text-sm items-center opacity-80">
                                                 <div className="flex items-center gap-3"><div className="p-1.5 bg-slate-200 dark:bg-slate-800 rounded-md"><Trash2 className="w-4 h-4 text-slate-600 dark:text-slate-400" /></div> <span className="font-medium">Trash</span></div>

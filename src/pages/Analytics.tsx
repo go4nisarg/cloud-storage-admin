@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useUsersStore } from "../store/users.store";
 import { formatSize, SizeUnits } from "../utils";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "../components/ui/card";
@@ -11,6 +12,7 @@ import { getTopDownloaded, getTopViewed, getTopUsers } from "../services/analyti
 import { TopUser } from "../types";
 
 export const Analytics = () => {
+    const navigate = useNavigate();
     const { loading } = useUsersStore();
 
     // New states for real API data
@@ -137,12 +139,12 @@ export const Analytics = () => {
                             <TableHeader className="bg-slate-50 dark:bg-slate-900/80">
                                 <TableRow>
                                     <TableHead className="pl-6">User</TableHead>
-                                    <TableHead className="text-right pr-6">Storage Used</TableHead>
+                                    <TableHead className="text-right pr-6">Used</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
                                 {topUsersData.map((user) => (
-                                    <TableRow key={user.userId} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/50">
+                                    <TableRow key={user.userId} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/50 cursor-pointer" onClick={() => navigate(`/user/${user.userId}`)}>
                                         <TableCell className="pl-6 max-w-[150px] sm:max-w-[200px]">
                                             <div className="font-semibold text-sm text-slate-700 dark:text-slate-200 truncate" title={user.name}>{user.name}</div>
                                             <div className="text-xs text-slate-500 truncate" title={user.email}>{user.email}</div>
@@ -174,22 +176,34 @@ export const Analytics = () => {
                             <TableHeader className="bg-slate-50 dark:bg-slate-900/80">
                                 <TableRow>
                                     <TableHead className="pl-6">User</TableHead>
-                                    <TableHead className="text-right pr-6">Total Views</TableHead>
+                                    <TableHead className="text-right pr-6">Views</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                {topViewedData.map((item: any, idx: number) => (
-                                    <TableRow key={item.id || idx} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/50">
+                                {topViewedData?.map((item: any, idx: number) => (
+                                    <TableRow
+                                        key={item?.id || idx}
+                                        className="hover:bg-slate-50/50 dark:hover:bg-slate-800/50 cursor-pointer"
+                                        onClick={() => {
+                                            if (!item?.id) return;
+                                            const params = new URLSearchParams({
+                                                name: item.name ?? '',
+                                                sourceType: item.sourceType ?? '',
+                                                url: item.url ?? '',
+                                            });
+                                            navigate(`/file/${item.id}?${params.toString()}`);
+                                        }}
+                                    >
                                         <TableCell className="pl-6 max-w-[150px] sm:max-w-[200px]">
-                                            <div className="font-semibold text-sm text-slate-700 dark:text-slate-200 truncate" title={item.name || "Unknown File"}>{item.name || "Unknown File"}</div>
-                                            <div className="text-xs text-slate-500 truncate capitalize">{item?.sourceType.toLowerCase() || ""}</div>
+                                            <div className="font-semibold text-sm text-slate-700 dark:text-slate-200 truncate" title={item?.name || "Unknown File"}>{item?.name || "Unknown File"}</div>
+                                            <div className="text-xs text-slate-500 truncate capitalize">{item?.sourceType?.toLowerCase() || ""}</div>
                                         </TableCell>
                                         <TableCell className="text-right pr-6 font-bold text-lg text-orange-600 dark:text-orange-400">
-                                            {item.viewCount || 0}
+                                            {item?.viewCount || 0}
                                         </TableCell>
                                     </TableRow>
                                 ))}
-                                {topViewedData.length === 0 && (
+                                {topViewedData?.length === 0 && (
                                     <TableRow>
                                         <TableCell colSpan={2} className="text-center text-slate-500 py-4">No view data available</TableCell>
                                     </TableRow>
@@ -211,22 +225,34 @@ export const Analytics = () => {
                             <TableHeader className="bg-slate-50 dark:bg-slate-900/80">
                                 <TableRow>
                                     <TableHead className="pl-6">User</TableHead>
-                                    <TableHead className="text-right pr-6">Total Downloads</TableHead>
+                                    <TableHead className="text-right pr-6">Downloads</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                {topDownloadedData.map((item: any, idx: number) => (
-                                    <TableRow key={item.id || idx} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/50">
+                                {topDownloadedData?.map((item: any, idx: number) => (
+                                    <TableRow
+                                        key={item?.id || idx}
+                                        className={`hover:bg-slate-50/50 dark:hover:bg-slate-800/50 ${item?.id ? "cursor-pointer" : ""}`}
+                                        onClick={() => {
+                                            if (!item?.id) return;
+                                            const params = new URLSearchParams({
+                                                name: item.name ?? '',
+                                                sourceType: item.sourceType ?? '',
+                                                url: item.url ?? '',
+                                            });
+                                            navigate(`/file/${item.id}?${params.toString()}`);
+                                        }}
+                                    >
                                         <TableCell className="pl-6 max-w-[150px] sm:max-w-[200px]">
-                                            <div className="font-semibold text-sm text-slate-700 dark:text-slate-200 truncate" title={item.name || "Unknown File"}>{item.name || "Unknown File"}</div>
-                                            <div className="text-xs text-slate-500 truncate capitalize">{item?.sourceType.toLowerCase() || ""}</div>
+                                            <div className="font-semibold text-sm text-slate-700 dark:text-slate-200 truncate" title={item?.name || "Unknown File"}>{item?.name || "Unknown File"}</div>
+                                            <div className="text-xs text-slate-500 truncate capitalize">{item?.sourceType?.toLowerCase() || ""}</div>
                                         </TableCell>
                                         <TableCell className="text-right pr-6 font-bold text-lg text-teal-600 dark:text-teal-400">
-                                            {item.downloadCount || 0}
+                                            {item?.downloadCount || 0}
                                         </TableCell>
                                     </TableRow>
                                 ))}
-                                {topDownloadedData.length === 0 && (
+                                {topDownloadedData?.length === 0 && (
                                     <TableRow>
                                         <TableCell colSpan={2} className="text-center text-slate-500 py-4">No download data available</TableCell>
                                     </TableRow>

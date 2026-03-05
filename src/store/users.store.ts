@@ -15,7 +15,8 @@ interface UsersState {
     userDownloadsCount: Record<string, number>;
     hasMore: boolean;
     page: number;
-    fetchUsers: (reset?: boolean) => Promise<void>;
+    currentSearch: string;
+    fetchUsers: (reset?: boolean, search?: string) => Promise<void>;
     fetchUserDetails: (userId: string) => Promise<void>;
     deleteUser: (userId: string) => Promise<void>;
     restoreUser: (userId: string) => Promise<void>;
@@ -32,19 +33,23 @@ export const useUsersStore = create<UsersState>((set, get) => ({
     userDownloadsCount: {},
     hasMore: true,
     page: 1,
+    currentSearch: '',
 
-    fetchUsers: async (reset = false) => {
+    fetchUsers: async (reset = false, search?: string) => {
+        const currentSearch = reset ? (search ?? '') : get().currentSearch;
         const currentPage = reset ? 1 : get().page;
         if (reset) {
-            set({ loading: true, error: null, users: [], page: 1, hasMore: true });
+            set({ loading: true, error: null, users: [], page: 1, hasMore: true, currentSearch });
         } else {
             set({ loading: true, error: null });
         }
 
         try {
-            const [usersList] = await Promise.all([
-                userService.getUsers({ page: currentPage, limit: 20 }),
-            ]);
+            const usersList = await userService.getUsers({
+                page: currentPage,
+                limit: 20,
+                ...(currentSearch ? { search: currentSearch } : {}),
+            });
 
             const currentUsers = reset ? [] : get().users;
             const newUsers = [...currentUsers, ...usersList];
@@ -62,7 +67,7 @@ export const useUsersStore = create<UsersState>((set, get) => ({
     },
 
     fetchUserDetails: async (userId: string) => {
-        set({ loading: true, error: null });
+        set({ loading: true, error: null, selectedUser: null });
         try {
             const user = await userService.getUserById(userId);
             if (user) {

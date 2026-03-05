@@ -1,4 +1,5 @@
 import { useEffect, useState, useMemo, useRef, useCallback } from "react";
+import { useDebounce } from "../hooks/useDebounce";
 import { Link } from "react-router-dom";
 import { useUsersStore } from "../store/users.store";
 import { formatSize, formatDate, SizeUnits } from "../utils";
@@ -17,25 +18,17 @@ export const UsersManagement = () => {
     const [search, setSearch] = useState("");
     const [filterStatus, setFilterStatus] = useState("ALL");
     const [filterRole, setFilterRole] = useState("ALL");
+    const debouncedSearch = useDebounce(search, 400);
 
     const [userToDelete, setUserToDelete] = useState<string | null>(null);
     const [userToRestore, setUserToRestore] = useState<string | null>(null);
 
     useEffect(() => {
-        fetchUsers(true);
-    }, [search, filterStatus, filterRole, fetchUsers]);
+        fetchUsers(true, debouncedSearch);
+    }, [debouncedSearch, fetchUsers]);
 
     const filteredUsers = useMemo(() => {
         let result = users;
-
-        if (search) {
-            const lowerSearch = search.toLowerCase();
-            result = result.filter(u =>
-                u.email?.toLowerCase().includes(lowerSearch) ||
-                u.phoneNumber?.includes(lowerSearch) ||
-                u.name.toLowerCase().includes(lowerSearch)
-            );
-        }
 
         if (filterRole === "ADMIN") result = result.filter(u => u.isAdmin);
         if (filterRole === "USER") result = result.filter(u => !u.isAdmin);
@@ -43,8 +36,8 @@ export const UsersManagement = () => {
         if (filterStatus === "ACTIVE") result = result.filter(u => !u.deletedAt);
         if (filterStatus === "DELETED") result = result.filter(u => !!u.deletedAt);
 
-        return result.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-    }, [users, search, filterRole, filterStatus]);
+        return result;
+    }, [users, filterRole, filterStatus]);
 
     const observer = useRef<IntersectionObserver | null>(null);
     const lastUserElementRef = useCallback((node: HTMLDivElement | null) => {
@@ -142,7 +135,6 @@ export const UsersManagement = () => {
                                 filteredUsers.map((user, index) => {
                                     const storagePercentage = (user.totalUsedStorageBytes / user.storageLimitInBytes) * 100;
 
-                                    // Progress styling wrapper since indicatorClassName isn't passed natively by standard shadcn progress
                                     const progressColorState = storagePercentage > 90 ? "bg-red-600 dark:bg-red-500" :
                                         storagePercentage > 70 ? "bg-yellow-500 dark:bg-yellow-400" :
                                             "bg-blue-600 dark:bg-blue-500";
@@ -163,7 +155,7 @@ export const UsersManagement = () => {
                                                 <div className="text-xs text-slate-500">{user.countryCode} {user.phoneNumber}</div>
                                             </TableCell>
                                             <TableCell>
-                                                <div className="flex flex-col gap-1 items-start">
+                                                <div className="flex flex-col gap-1 items-start max-w-[70px] min-w-[70px]">
                                                     {user.isEmailVerified ? (
                                                         <Badge variant="secondary" className="bg-green-100/50 text-green-800 dark:bg-green-900/30 dark:text-green-400 font-normal text-[10px]">Email ✓</Badge>
                                                     ) : (
@@ -177,21 +169,18 @@ export const UsersManagement = () => {
                                                 </div>
                                             </TableCell>
                                             <TableCell>
-                                                <div className="space-y-1.5 [&_[data-state]]:bg-slate-100 dark:[&_[data-state]]:bg-slate-800">
+                                                <div className="space-y-1.5">
                                                     <div className="flex justify-between text-xs">
-                                                        <span className="font-medium">{formatSize(user.totalUsedStorageBytes || 0, SizeUnits.Bytes)}</span>
-                                                        <span className="text-slate-500">{formatSize(user.storageLimitInBytes || 0, SizeUnits.Bytes)} free</span>
+                                                        <span className="font-medium">{formatSize(user.totalUsedStorageBytes, SizeUnits.Bytes)}</span>
+                                                        <span className="text-slate-500">{formatSize(user.storageLimitInBytes, SizeUnits.Bytes)} free</span>
                                                     </div>
-                                                    {/* We apply color by targeting the child indicator, or modify progress component directly later */}
-                                                    <div className={`[&_div]:${progressColorState}`}>
-                                                        <Progress value={storagePercentage} className="h-1.5" />
-                                                    </div>
+                                                    <Progress value={storagePercentage} className="h-1.5" indicatorClassName={progressColorState} />
                                                 </div>
                                             </TableCell>
                                             <TableCell>
                                                 <div className="text-xs space-y-1">
-                                                    <div><span className="text-slate-500">Views:</span> {user.totalViews || 0}</div>
-                                                    <div><span className="text-slate-500">DLs:</span> {user.totalDownloads || 0}</div>
+                                                    <div><span className="text-slate-500">Views:</span> {user.totalViews}</div>
+                                                    <div><span className="text-slate-500">DLs:</span> {user.totalDownloads}</div>
                                                 </div>
                                             </TableCell>
                                             <TableCell className="text-sm text-slate-600 dark:text-slate-400">
@@ -199,11 +188,13 @@ export const UsersManagement = () => {
                                             </TableCell>
                                             <TableCell className="text-right">
                                                 <div className="flex justify-end gap-1">
-                                                    <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-blue-900/20" asChild>
-                                                        <Link to={`/user/${user.id}`}>
-                                                            <Eye className="h-4 w-4" />
-                                                        </Link>
-                                                    </Button>
+                                                    {!user.deletedAt && (
+                                                        <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-blue-900/20" asChild>
+                                                            <Link to={`/user/${user.id}`}>
+                                                                <Eye className="h-4 w-4" />
+                                                            </Link>
+                                                        </Button>
+                                                    )}
                                                     {!user.deletedAt ? (
                                                         <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20" onClick={() => setUserToDelete(user.id)}>
                                                             <Trash2 className="h-4 w-4 text-slate-400 hover:text-red-600" />

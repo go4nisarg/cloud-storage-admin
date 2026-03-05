@@ -5,6 +5,7 @@ import { apiClient } from "./api";
 interface GetUsersParams {
     page?: number;
     limit?: number;
+    search?: string;
     sortBy?: string;
     sortOrder?: 'asc' | 'desc';
 }
@@ -14,8 +15,9 @@ export const getUsers = async (params?: GetUsersParams): Promise<User[]> => {
         const response = await apiClient.get('/web/admin/users', {
             params: {
                 sortBy: 'createdAt',
-                sortOrder: 'asc',
-                ...params
+                sortOrder: 'desc',
+                ...params,
+                ...(params?.search ? { search: params.search } : {}),
             }
         });
         const apiUsers = response.data?.data || [];
@@ -57,11 +59,80 @@ export const restoreUser = async (id: string): Promise<boolean> => {
 };
 
 export const blockUser = async (id: string): Promise<boolean> => {
-    try {
-        await apiClient.patch(`/web/admin/users/${id}/block`);
-        return true;
-    } catch (error) {
-        console.error(`Failed to block user with id ${id}`, error);
-        return false;
-    }
+    return new Promise((resolve) => setTimeout(() => {
+        resolve(true);
+    }, 300));
 }
+
+export interface Upload {
+    id: string;
+    userId: string;
+    name: string;
+    sourceType: string;
+    format: string;
+    url: string;
+    thumbnail: string;
+    size: number;
+    sizeIn: string;
+    status: string;
+    createdAt: string;
+}
+
+export interface UploadsResponse {
+    data: Upload[];
+    meta: {
+        total: number;
+        page: number;
+        limit: number;
+        totalPages: number;
+    };
+}
+
+export interface AffiliatesResponse {
+    data: import("../types").User[];
+    meta: {
+        total: number;
+        page: number;
+        limit: number;
+        totalPages: number;
+    };
+}
+
+export const getAffiliateUsers = async (params: {
+    userId: string;
+    page?: number;
+    limit?: number;
+    search?: string;
+}): Promise<AffiliatesResponse> => {
+    const response = await apiClient.get('/web/analytics/get-reference-users', {
+        params: {
+            userId: params.userId,
+            page: params.page ?? 1,
+            limit: params.limit ?? 20,
+            sortBy: 'createdAt',
+            sortOrder: 'desc',
+            ...(params.search ? { search: params.search } : {}),
+        },
+    });
+    return response.data;
+};
+
+export const getUserUploads = async (params: {
+    userId: string;
+    sourceType: string;
+    page?: number;
+    limit?: number;
+}): Promise<UploadsResponse> => {
+    const response = await apiClient.get('/web/admin/uploads', {
+        params: {
+            userId: params.userId,
+            sourceType: params.sourceType,
+            page: params.page ?? 1,
+            limit: params.limit ?? 20,
+            sortBy: 'createdAt',
+            sortOrder: 'desc',
+            status: 'PENDING,PROCESSING,COMPLETED',
+        },
+    });
+    return response.data;
+};

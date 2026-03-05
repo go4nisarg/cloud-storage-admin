@@ -1,24 +1,28 @@
 import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
 import { Cloud, Users, LayoutDashboard, BarChart3, LogOut, Menu, AlertTriangle } from 'lucide-react';
-import { useAuthStore } from '../store/auth.store';
+import { useAuthStore, isSuperAdmin } from '../store/auth.store';
 import { Button } from '../components/ui/button';
 
 export const DashboardLayout = () => {
     const logout = useAuthStore(state => state.logout);
+    const user = useAuthStore(state => state.user);
     const navigate = useNavigate();
     const location = useLocation();
+    const superAdmin = isSuperAdmin(user);
 
     const handleLogout = () => {
         logout();
         navigate('/login');
     };
 
-    const navItems = [
-        { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
-        { name: 'Users', path: '/users', icon: Users },
-        { name: 'Analytics', path: '/analytics', icon: BarChart3 },
-        { name: 'Reported Files', path: '/reported-files', icon: AlertTriangle }
+    const allNavItems = [
+        { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard, superAdminOnly: false },
+        { name: 'Users', path: '/users', icon: Users, superAdminOnly: true },
+        { name: 'Analytics', path: '/analytics', icon: BarChart3, superAdminOnly: true },
+        { name: 'Reported Files', path: '/reported-files', icon: AlertTriangle, superAdminOnly: false },
     ];
+
+    const navItems = allNavItems.filter(item => !item.superAdminOnly || superAdmin);
 
     return (
         <div className="flex h-screen bg-slate-50 dark:bg-slate-900 font-sans">

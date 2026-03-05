@@ -1,6 +1,8 @@
 import { useState, useMemo, useEffect, useRef, useCallback } from "react";
-import { Link } from "react-router-dom";
+import { useDebounce } from "../hooks/useDebounce";
+import { Link, useNavigate } from "react-router-dom";
 import { useReportedStore } from "../store/reported.store";
+import { useAuthStore, isSuperAdmin } from "../store/auth.store";
 import { formatDate } from "../utils";
 import { Tooltip, TooltipTrigger, TooltipContent } from "../components/ui/tooltip";
 import { Input } from "../components/ui/input";
@@ -9,12 +11,16 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from ".
 import { Badge } from "../components/ui/badge";
 
 export const ReportedFiles = () => {
+    const navigate = useNavigate();
+    const user = useAuthStore(state => state.user);
+    const superAdmin = isSuperAdmin(user);
     const { reportedItems, fetchReportedItems, loading, hasMore } = useReportedStore();
     const [search, setSearch] = useState("");
+    const debouncedSearch = useDebounce(search, 400);
 
     const filteredItems = useMemo(() => {
-        if (!search) return reportedItems;
-        const lowerSearch = search.toLowerCase();
+        if (!debouncedSearch) return reportedItems;
+        const lowerSearch = debouncedSearch.toLowerCase();
         return reportedItems.filter(item =>
             item.fsObject?.name?.toLowerCase().includes(lowerSearch) ||
             item.owner?.email?.toLowerCase().includes(lowerSearch) ||
@@ -22,7 +28,7 @@ export const ReportedFiles = () => {
             item.owner?.name?.toLowerCase().includes(lowerSearch) ||
             item.reportedBy?.name?.toLowerCase().includes(lowerSearch)
         );
-    }, [reportedItems, search]);
+    }, [reportedItems, debouncedSearch]);
 
     useEffect(() => {
         fetchReportedItems(true);
@@ -97,9 +103,26 @@ export const ReportedFiles = () => {
                                             <TableCell>
                                                 <Tooltip>
                                                     <TooltipTrigger asChild>
-                                                        <Link to={`/file/${item.fsObject?.id}`} className="font-medium block max-w-[200px] sm:max-w-[300px] truncate hover:text-blue-600 hover:underline">
-                                                            {item.fsObject?.name}
-                                                        </Link>
+                                                        {superAdmin ? (
+                                                            <button
+                                                                onClick={() => {
+                                                                    if (!item.fsObject?.id) return;
+                                                                    const params = new URLSearchParams({
+                                                                        name: item.fsObject.name ?? '',
+                                                                        sourceType: item.fsObject.type ?? '',
+                                                                        url: item.fsObject.url ?? '',
+                                                                    });
+                                                                    navigate(`/file/${item.fsObject.id}?${params.toString()}`);
+                                                                }}
+                                                                className="font-medium block max-w-[200px] sm:max-w-[300px] truncate hover:text-blue-600 hover:underline text-left"
+                                                            >
+                                                                {item.fsObject?.name}
+                                                            </button>
+                                                        ) : (
+                                                            <span className="font-medium block max-w-[200px] sm:max-w-[300px] truncate">
+                                                                {item.fsObject?.name}
+                                                            </span>
+                                                        )}
                                                     </TooltipTrigger>
                                                     <TooltipContent side="top">
                                                         <p className="max-w-[400px] break-all">{item.fsObject?.name}</p>
