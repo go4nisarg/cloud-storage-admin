@@ -201,7 +201,7 @@ export const UserDetails = () => {
                             Storage Space & Files
                         </CardTitle>
                         <CardDescription>
-                            User limit: <span className="font-semibold text-slate-700 dark:text-slate-300">{selectedUser.storageLimitInBytes}</span> capacity
+                            User limit: <span className="font-semibold text-slate-700 dark:text-slate-300">{formatSize(selectedUser.storageLimitInBytes,SizeUnits.Bytes)}</span> capacity
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
