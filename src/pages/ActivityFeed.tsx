@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { ActivityFeedItem, ActivityFeedResponse, earningService } from '../services/earning.service';
+import { useEffect, useState } from 'react';
+import { ActivityFeedResponse, earningService } from '../services/earning.service';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import { Button } from '../components/ui/button';

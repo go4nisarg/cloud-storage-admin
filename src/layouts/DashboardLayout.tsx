@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
-import { Cloud, Users, LayoutDashboard, BarChart3, LogOut, Menu, AlertTriangle, DollarSign, Activity, List, CreditCard, Settings, Layers, History, ChevronDown } from 'lucide-react';
+import { Cloud, Users, LayoutDashboard, BarChart3, LogOut, Menu, AlertTriangle, DollarSign, ChevronDown } from 'lucide-react';
 import { useAuthStore, isSuperAdmin } from '../store/auth.store';
 import { Button } from '../components/ui/button';
 

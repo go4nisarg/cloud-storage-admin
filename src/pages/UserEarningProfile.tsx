@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { UserEarningProfile, earningService } from '../services/earning.service';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { ArrowLeft, AlertTriangle, CheckCircle, Ban, DollarSign } from 'lucide-react';
 import { format } from 'date-fns';
