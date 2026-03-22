@@ -1,0 +1,405 @@
+import { apiClient } from './api';
+
+export interface RevenueEventsByStatus {
+    status: string;
+    event_count: string;
+    total_units: string;
+}
+
+export interface PayoutsByStatus {
+    status: string;
+    payout_count: string;
+    total_units: string;
+}
+
+export interface OverviewResponse {
+    revenueEventsByStatus: RevenueEventsByStatus[];
+    payoutsByStatus: PayoutsByStatus[];
+}
+
+export interface ActivityFeedItem {
+    id: string;
+    type: string;
+    user_id: string;
+    units: string;
+    currency: string;
+    status: string;
+    timestamp: string;
+}
+
+export interface RevenueEvent {
+    id: string;
+    event_type?: string;
+    eventType?: string;
+    actor_user_id?: string;
+    actorUserId?: string;
+    beneficiary_user_id?: string;
+    beneficiaryUserId?: string;
+    reward_units?: string;
+    rewardUnits?: string;
+    currency: string;
+    status: string;
+    inserted_at?: string;
+    insertedAt?: string;
+    event_timestamp?: string;
+    fraud_flags?: string[];
+    fraudFlags?: string[];
+    fraud_flags_overridden?: string[] | null;
+    fraudFlagsOverridden?: string[] | null;
+    approved_by?: string | null;
+    approvedBy?: string | null;
+    approved_at?: string | null;
+    approvedAt?: string | null;
+    rejected_reason?: string | null;
+    rejectedReason?: string | null;
+    admin_note?: string | null;
+    adminNote?: string | null;
+    beneficiary_name?: string;
+    actor_name?: string;
+}
+
+export interface Payout {
+    id: string;
+    user_id?: string;
+    userId?: string;
+    total_units?: string;
+    totalUnits?: string;
+    currency: string;
+    status: string;
+    event_ids?: string[];
+    eventIds?: string[];
+    holding_release_at?: string;
+    holdingReleaseAt?: string;
+    created_at?: string;
+    createdAt?: string;
+    paid_at?: string | null;
+    paidAt?: string | null;
+    approved_by?: string | null;
+    approvedBy?: string | null;
+    approved_at?: string | null;
+    approvedAt?: string | null;
+    held_by?: string | null;
+    heldBy?: string | null;
+    held_at?: string | null;
+    heldAt?: string | null;
+    held_reason?: string | null;
+    heldReason?: string | null;
+    released_by?: string | null;
+    releasedBy?: string | null;
+    released_at?: string | null;
+    releasedAt?: string | null;
+    transaction_ref?: string | null;
+    transactionRef?: string | null;
+    payment_provider?: string | null;
+    paymentProvider?: string | null;
+    failed_reason?: string | null;
+    failedReason?: string | null;
+    admin_note?: string | null;
+    adminNote?: string | null;
+    user_name?: string;
+    user_email?: string;
+    event_count?: string;
+    event_sum_units?: string;
+}
+
+export interface UserEarningProfile {
+    user: {
+        id: string;
+        name: string;
+        email: string;
+        earningSuspended: boolean;
+        earningSuspendedBy: string | null;
+        earningSuspendedAt: string | null;
+        earningSuspendedReason: string | null;
+        payoutBlocked: boolean;
+        payoutBlockedBy: string | null;
+        payoutBlockedAt: string | null;
+        payoutBlockedCategory: string | null;
+        earningPlanSwitchCount: number;
+        maxEarningPlanSwitches: number;
+        createdAt: string;
+    };
+    earningPlan: {
+        id: string;
+        userId: string;
+        earningPlanId: string;
+        selectedAt: string;
+        earningPlan: {
+            id: string;
+            planName: string;
+            planType: string;
+            rewardPerViewUnits: string;
+            rewardPerSignupUnits: string;
+            isActive: boolean;
+        };
+    } | null;
+    totalEarned: string;
+    totalPaid: string;
+    recentEvents: RevenueEvent[];
+    payouts: Payout[];
+    fraudSummary: {
+        totalEvents: number;
+        flaggedEvents: number;
+        rejectedEvents: number;
+        rejectionRate: number;
+    };
+}
+
+export interface AuditLogItem {
+    id: string;
+    admin_user_id: string;
+    action: string;
+    entity_type: string;
+    entity_id: string;
+    before_value: any;
+    after_value: any;
+    note: string | null;
+    created_at: string;
+}
+
+export interface EarningConfig {
+    id: string;
+    minPayoutUnits: string;
+    autoProcessPayouts: boolean;
+    maxPayoutsPerDay: number;
+    maxEventsPerUserPerDay: number;
+    fraudScoreThreshold: number;
+    payoutHoldDays: number;
+    allowManualWithdrawals: boolean;
+    updatedAt: string;
+    updatedBy: string;
+}
+
+export interface EarningPlan {
+    id: string;
+    planName: string;
+    planType: string;
+    description: string;
+    rewardPerViewUnits: string;
+    rewardPerSignupUnits: string;
+    minViewsForReward: number;
+    maxRewardsPerDay: number;
+    isActive: boolean;
+    createdAt: string;
+    updatedAt: string;
+}
+
+export interface PaginatedResult<T> {
+    data: T[];
+    total: number;
+    page: number;
+    limit: number;
+}
+
+export interface UserEarningProfile {
+    user: {
+        id: string;
+        name: string;
+        email: string;
+        earningSuspended: boolean;
+        earningSuspendedBy: string | null;
+        earningSuspendedAt: string | null;
+        earningSuspendedReason: string | null;
+        payoutBlocked: boolean;
+        payoutBlockedBy: string | null;
+        payoutBlockedAt: string | null;
+        payoutBlockedCategory: string | null;
+        earningPlanSwitchCount: number;
+        maxEarningPlanSwitches: number;
+        createdAt: string;
+    };
+    earningPlan: {
+        id: string;
+        userId: string;
+        earningPlanId: string;
+        selectedAt: string;
+        earningPlan: {
+            id: string;
+            planName: string;
+            planType: string;
+            rewardPerViewUnits: string;
+            rewardPerSignupUnits: string;
+            isActive: boolean;
+        };
+    } | null;
+    totalEarned: string;
+    totalPaid: string;
+    recentEvents: RevenueEvent[];
+    payouts: Payout[];
+    fraudSummary: {
+        totalEvents: number;
+        flaggedEvents: number;
+        rejectedEvents: number;
+        rejectionRate: number;
+    };
+}
+
+export interface ActivityFeedResponse {
+    data: ActivityFeedItem[];
+    total: number;
+    page: number;
+    limit: number;
+}
+
+export const earningService = {
+    getOverview: async () => {
+        const response = await apiClient.get<{ status: number; message: string; data: OverviewResponse }>('/api/v1/web/earning/overview');
+        return response.data.data;
+    },
+
+    getActivityFeed: async (params: { page?: number; limit?: number; date?: string; type?: string }) => {
+        const response = await apiClient.get<PaginatedResult<ActivityFeedItem>>('/api/v1/web/earning/activity-feed', { params });
+        return response.data;
+    },
+
+    // Revenue Events
+    getEvents: async (params: { page?: number; limit?: number; status?: string; type?: string; userId?: string; hasFraudFlags?: boolean; sortBy?: string; sortDir?: string }) => {
+        const response = await apiClient.get<PaginatedResult<RevenueEvent>>('/api/v1/web/earning/events', { params });
+        return response.data;
+    },
+
+    getFraudQueue: async (params: { page?: number; limit?: number }) => {
+        const response = await apiClient.get<PaginatedResult<RevenueEvent>>('/api/v1/web/earning/events/fraud-queue', { params });
+        return response.data;
+    },
+
+    getEventById: async (id: string) => {
+        const response = await apiClient.get<{ data: RevenueEvent }>(`/api/v1/web/earning/events/${id}`);
+        return response.data.data;
+    },
+
+    approveEvent: async (id: string, note?: string) => {
+        const response = await apiClient.patch<{ data: RevenueEvent }>(`/api/v1/web/earning/events/${id}/approve`, { note });
+        return response.data.data;
+    },
+
+    rejectEvent: async (id: string, reason: string, note?: string) => {
+        const response = await apiClient.patch<{ data: RevenueEvent }>(`/api/v1/web/earning/events/${id}/reject`, { reason, note });
+        return response.data.data;
+    },
+
+    overrideFraudFlag: async (id: string, justification: string) => {
+        const response = await apiClient.patch<{ data: RevenueEvent }>(`/api/v1/web/earning/events/${id}/override-fraud`, { justification });
+        return response.data.data;
+    },
+
+    flagEvent: async (id: string, reason: string, note?: string) => {
+        const response = await apiClient.patch<{ data: RevenueEvent }>(`/api/v1/web/earning/events/${id}/flag`, { reason, note });
+        return response.data.data;
+    },
+
+    bulkActionEvents: async (ids: string[], action: 'APPROVE' | 'REJECT', reason?: string, note?: string) => {
+        const response = await apiClient.post<{ data: { succeeded: number; failed: number; errors: any[] } }>('/api/v1/web/earning/events/bulk-action', { ids, action, reason, note });
+        return response.data.data;
+    },
+
+    // Payouts
+    getPayouts: async (params: { page?: number; limit?: number; status?: string; userId?: string; sortBy?: string; sortDir?: string }) => {
+        const response = await apiClient.get<PaginatedResult<Payout>>('/api/v1/web/earning/payouts', { params });
+        return response.data;
+    },
+
+    getPayoutById: async (id: string) => {
+        const response = await apiClient.get<{ data: Payout }>(`/api/v1/web/earning/payouts/${id}`);
+        return response.data.data;
+    },
+
+    approvePayout: async (id: string, note?: string) => {
+        const response = await apiClient.patch<{ data: Payout }>(`/api/v1/web/earning/payouts/${id}/approve`, { note });
+        return response.data.data;
+    },
+
+    holdPayout: async (id: string, reason: string) => {
+        const response = await apiClient.patch<{ data: Payout }>(`/api/v1/web/earning/payouts/${id}/hold`, { reason });
+        return response.data.data;
+    },
+
+    releasePayoutHold: async (id: string, note?: string) => {
+        const response = await apiClient.patch<{ data: Payout }>(`/api/v1/web/earning/payouts/${id}/release`, { note });
+        return response.data.data;
+    },
+
+    markPayoutPaid: async (id: string, providerName: string, transactionRef: string, note?: string) => {
+        const response = await apiClient.patch<{ data: Payout }>(`/api/v1/web/earning/payouts/${id}/mark-paid`, { providerName, transactionRef, note });
+        return response.data.data;
+    },
+
+    markPayoutFailed: async (id: string, reason: string, note?: string) => {
+        const response = await apiClient.patch<{ data: Payout }>(`/api/v1/web/earning/payouts/${id}/mark-failed`, { reason, note });
+        return response.data.data;
+    },
+
+    retryPayout: async (id: string, note?: string) => {
+        const response = await apiClient.post<{ data: Payout }>(`/api/v1/web/earning/payouts/${id}/retry`, { note });
+        return response.data.data;
+    },
+
+    // User Earning Profile
+    getUserEarningProfile: async (userId: string, params?: { page?: number; limit?: number; payoutsPage?: number }) => {
+        const response = await apiClient.get<{ data: UserEarningProfile }>(`/api/v1/web/earning/users/${userId}`, { params });
+        return response.data.data;
+    },
+
+    suspendEarning: async (userId: string, reason: string) => {
+        const response = await apiClient.patch<{ data: any }>(`/api/v1/web/earning/users/${userId}/suspend`, { reason });
+        return response.data.data;
+    },
+
+    reinstateEarning: async (userId: string, note: string) => {
+        const response = await apiClient.patch<{ data: any }>(`/api/v1/web/earning/users/${userId}/reinstate`, { note });
+        return response.data.data;
+    },
+
+    overrideEarningPlan: async (userId: string, planId: string, resetSwitchCount: boolean, note: string) => {
+        const response = await apiClient.patch<{ data: any }>(`/api/v1/web/earning/users/${userId}/plan-override`, { planId, resetSwitchCount, note });
+        return response.data.data;
+    },
+
+    blockPayouts: async (userId: string, reason: string, category: string) => {
+        const response = await apiClient.patch<{ data: any }>(`/api/v1/web/earning/users/${userId}/block-payouts`, { reason, category });
+        return response.data.data;
+    },
+
+    unblockPayouts: async (userId: string, note: string) => {
+        const response = await apiClient.patch<{ data: any }>(`/api/v1/web/earning/users/${userId}/unblock-payouts`, { note });
+        return response.data.data;
+    },
+
+    // Config
+    getConfig: async () => {
+        const response = await apiClient.get<{ data: EarningConfig }>('/api/v1/web/earning/config');
+        return response.data.data;
+    },
+
+    updateConfig: async (configData: Partial<EarningConfig>) => {
+        const response = await apiClient.put<{ data: EarningConfig }>('/api/v1/web/earning/config', configData);
+        return response.data.data;
+    },
+
+    // Plans
+    getPlans: async () => {
+        const response = await apiClient.get<{ data: EarningPlan[] }>('/api/v1/web/earning/plans');
+        return response.data.data;
+    },
+
+    createPlan: async (planData: Partial<EarningPlan>) => {
+        const response = await apiClient.post<{ data: EarningPlan }>('/api/v1/web/earning/plans', planData);
+        return response.data.data;
+    },
+
+    updatePlan: async (id: string, planData: Partial<EarningPlan>) => {
+        const response = await apiClient.put<{ data: EarningPlan }>(`/api/v1/web/earning/plans/${id}`, planData);
+        return response.data.data;
+    },
+
+    updatePlanStatus: async (id: string, isActive: boolean) => {
+        const response = await apiClient.patch<{ data: EarningPlan }>(`/api/v1/web/earning/plans/${id}/status`, { isActive });
+        return response.data.data;
+    },
+
+    // Audit Log
+    getAuditLog: async (params?: { page?: number; limit?: number; adminUserId?: string; action?: string; entityType?: string; entityId?: string; format?: string }) => {
+        const response = await apiClient.get<PaginatedResult<AuditLogItem>>('/api/v1/web/earning/audit-log', { params });
+        return response.data;
+    }
+};

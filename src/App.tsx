@@ -10,6 +10,16 @@ import { ReportedFiles } from './pages/ReportedFiles';
 import { FilePreview } from './pages/FilePreview';
 import { UserFileList } from './pages/UserFileList';
 import { UserAffiliates } from './pages/UserAffiliates';
+import { RevenueOverview } from './pages/RevenueOverview';
+import { ActivityFeed } from './pages/ActivityFeed';
+import { RevenueEvents } from './pages/RevenueEvents';
+import { RevenueEventDetails } from './pages/RevenueEventDetails';
+import { Payouts } from './pages/Payouts';
+import { PayoutDetails } from './pages/PayoutDetails';
+import { UserEarningProfileView } from './pages/UserEarningProfile';
+import { RevenueConfig } from './pages/RevenueConfig';
+import { RevenuePlans } from './pages/RevenuePlans';
+import { AuditLog } from './pages/AuditLog';
 import { TooltipProvider } from './components/ui/tooltip';
 import { useAuthStore, isSuperAdmin } from './store/auth.store';
 
@@ -39,6 +49,16 @@ function App() {
                 <Route path="/file/:id" element={<FilePreview />} />
                 <Route path="/user/:userId/files/:fileType" element={<UserFileList />} />
                 <Route path="/user/:userId/affiliates" element={<UserAffiliates />} />
+                <Route path="/revenue" element={<RevenueOverview />} />
+                <Route path="/activity" element={<ActivityFeed />} />
+                <Route path="/revenue/events" element={<RevenueEvents />} />
+                <Route path="/revenue/events/:id" element={<RevenueEventDetails />} />
+                <Route path="/revenue/payouts" element={<Payouts />} />
+                <Route path="/revenue/payouts/:id" element={<PayoutDetails />} />
+                <Route path="/revenue/users/:id" element={<UserEarningProfileView />} />
+                <Route path="/revenue/config" element={<RevenueConfig />} />
+                <Route path="/revenue/plans" element={<RevenuePlans />} />
+                <Route path="/revenue/audit-log" element={<AuditLog />} />
               </Route>
             </Route>
           </Route>

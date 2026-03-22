@@ -60,22 +60,31 @@ export const UserDetails = () => {
 
     return (
         <div className="space-y-6 max-w-6xl mx-auto pb-10">
-            <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center justify-between mb-2 flex-wrap gap-4">
                 <div className="flex items-center gap-4">
                     <Button variant="outline" size="icon" className="hover:bg-slate-100 dark:hover:bg-slate-800" onClick={() => navigate(-1)}>
                         <ArrowLeft className="h-4 w-4" />
                     </Button>
                     <h2 className="text-2xl font-bold tracking-tight text-slate-800 dark:text-white">User Details</h2>
                 </div>
-                <Button
-                    variant="outline"
-                    size="icon"
-                    className="hover:bg-slate-100 dark:hover:bg-slate-800"
-                    onClick={() => id && fetchUserDetails(id)}
-                    title="Refresh user data"
-                >
-                    <RefreshCw className="h-4 w-4 text-slate-500 dark:text-slate-400" />
-                </Button>
+                <div className="flex items-center gap-2">
+                    <Button
+                        variant="secondary"
+                        className="bg-emerald-100 text-emerald-800 hover:bg-emerald-200 dark:bg-emerald-900 dark:text-emerald-200 border-emerald-200"
+                        onClick={() => navigate(`/revenue/users/${id}`)}
+                    >
+                        Earning Profile
+                    </Button>
+                    <Button
+                        variant="outline"
+                        size="icon"
+                        className="hover:bg-slate-100 dark:hover:bg-slate-800"
+                        onClick={() => id && fetchUserDetails(id)}
+                        title="Refresh user data"
+                    >
+                        <RefreshCw className="h-4 w-4 text-slate-500 dark:text-slate-400" />
+                    </Button>
+                </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -201,7 +210,7 @@ export const UserDetails = () => {
                             Storage Space & Files
                         </CardTitle>
                         <CardDescription>
-                            User limit: <span className="font-semibold text-slate-700 dark:text-slate-300">{formatSize(selectedUser.storageLimitInBytes,SizeUnits.Bytes)}</span> capacity
+                            User limit: <span className="font-semibold text-slate-700 dark:text-slate-300">{formatSize(selectedUser.storageLimitInBytes, SizeUnits.Bytes)}</span> capacity
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
@@ -256,10 +265,10 @@ export const UserDetails = () => {
 
                                     <div className="space-y-4 pt-2">
                                         {[
-                                            { label: "Images",    fileType: "images",    size: storage.breakdown.images,    icon: <Image className="w-4 h-4 text-blue-600" />,    iconBg: "bg-blue-100 dark:bg-blue-900/50" },
-                                            { label: "Videos",    fileType: "videos",    size: storage.breakdown.videos,    icon: <Video className="w-4 h-4 text-emerald-600" />, iconBg: "bg-emerald-100 dark:bg-emerald-900/50" },
-                                            { label: "Audio",     fileType: "audio",     size: storage.breakdown.audio,     icon: <Music className="w-4 h-4 text-amber-600" />,   iconBg: "bg-amber-100 dark:bg-amber-900/50" },
-                                            { label: "Zip",       fileType: "zip",       size: storage.breakdown.zip,       icon: <Archive className="w-4 h-4 text-rose-600" />,  iconBg: "bg-rose-100 dark:bg-rose-900/50" },
+                                            { label: "Images", fileType: "images", size: storage.breakdown.images, icon: <Image className="w-4 h-4 text-blue-600" />, iconBg: "bg-blue-100 dark:bg-blue-900/50" },
+                                            { label: "Videos", fileType: "videos", size: storage.breakdown.videos, icon: <Video className="w-4 h-4 text-emerald-600" />, iconBg: "bg-emerald-100 dark:bg-emerald-900/50" },
+                                            { label: "Audio", fileType: "audio", size: storage.breakdown.audio, icon: <Music className="w-4 h-4 text-amber-600" />, iconBg: "bg-amber-100 dark:bg-amber-900/50" },
+                                            { label: "Zip", fileType: "zip", size: storage.breakdown.zip, icon: <Archive className="w-4 h-4 text-rose-600" />, iconBg: "bg-rose-100 dark:bg-rose-900/50" },
                                             { label: "Documents", fileType: "documents", size: storage.breakdown.documents, icon: <FileText className="w-4 h-4 text-indigo-600" />, iconBg: "bg-indigo-100 dark:bg-indigo-900/50" },
                                         ].map(({ label, fileType, size, icon, iconBg }) => (
                                             <div
