@@ -243,163 +243,163 @@ export interface ActivityFeedResponse {
 
 export const earningService = {
     getOverview: async () => {
-        const response = await apiClient.get<{ status: number; message: string; data: OverviewResponse }>('/api/v1/web/earning/overview');
+        const response = await apiClient.get<{ status: number; message: string; data: OverviewResponse }>('/web/earning/overview');
         return response.data.data;
     },
 
     getActivityFeed: async (params: { page?: number; limit?: number; date?: string; type?: string }) => {
-        const response = await apiClient.get<PaginatedResult<ActivityFeedItem>>('/api/v1/web/earning/activity-feed', { params });
+        const response = await apiClient.get<PaginatedResult<ActivityFeedItem>>('/web/earning/activity-feed', { params });
         return response.data;
     },
 
     // Revenue Events
     getEvents: async (params: { page?: number; limit?: number; status?: string; type?: string; userId?: string; hasFraudFlags?: boolean; sortBy?: string; sortDir?: string }) => {
-        const response = await apiClient.get<PaginatedResult<RevenueEvent>>('/api/v1/web/earning/events', { params });
+        const response = await apiClient.get<PaginatedResult<RevenueEvent>>('/web/earning/events', { params });
         return response.data;
     },
 
     getFraudQueue: async (params: { page?: number; limit?: number }) => {
-        const response = await apiClient.get<PaginatedResult<RevenueEvent>>('/api/v1/web/earning/events/fraud-queue', { params });
+        const response = await apiClient.get<PaginatedResult<RevenueEvent>>('/web/earning/events/fraud-queue', { params });
         return response.data;
     },
 
     getEventById: async (id: string) => {
-        const response = await apiClient.get<{ data: RevenueEvent }>(`/api/v1/web/earning/events/${id}`);
+        const response = await apiClient.get<{ data: RevenueEvent }>(`/web/earning/events/${id}`);
         return response.data.data;
     },
 
     approveEvent: async (id: string, note?: string) => {
-        const response = await apiClient.patch<{ data: RevenueEvent }>(`/api/v1/web/earning/events/${id}/approve`, { note });
+        const response = await apiClient.patch<{ data: RevenueEvent }>(`/web/earning/events/${id}/approve`, { note });
         return response.data.data;
     },
 
     rejectEvent: async (id: string, reason: string, note?: string) => {
-        const response = await apiClient.patch<{ data: RevenueEvent }>(`/api/v1/web/earning/events/${id}/reject`, { reason, note });
+        const response = await apiClient.patch<{ data: RevenueEvent }>(`/web/earning/events/${id}/reject`, { reason, note });
         return response.data.data;
     },
 
     overrideFraudFlag: async (id: string, justification: string) => {
-        const response = await apiClient.patch<{ data: RevenueEvent }>(`/api/v1/web/earning/events/${id}/override-fraud`, { justification });
+        const response = await apiClient.patch<{ data: RevenueEvent }>(`/web/earning/events/${id}/override-fraud`, { justification });
         return response.data.data;
     },
 
     flagEvent: async (id: string, reason: string, note?: string) => {
-        const response = await apiClient.patch<{ data: RevenueEvent }>(`/api/v1/web/earning/events/${id}/flag`, { reason, note });
+        const response = await apiClient.patch<{ data: RevenueEvent }>(`/web/earning/events/${id}/flag`, { reason, note });
         return response.data.data;
     },
 
     bulkActionEvents: async (ids: string[], action: 'APPROVE' | 'REJECT', reason?: string, note?: string) => {
-        const response = await apiClient.post<{ data: { succeeded: number; failed: number; errors: any[] } }>('/api/v1/web/earning/events/bulk-action', { ids, action, reason, note });
+        const response = await apiClient.post<{ data: { succeeded: number; failed: number; errors: any[] } }>('/web/earning/events/bulk-action', { ids, action, reason, note });
         return response.data.data;
     },
 
     // Payouts
     getPayouts: async (params: { page?: number; limit?: number; status?: string; userId?: string; sortBy?: string; sortDir?: string }) => {
-        const response = await apiClient.get<PaginatedResult<Payout>>('/api/v1/web/earning/payouts', { params });
+        const response = await apiClient.get<PaginatedResult<Payout>>('/web/earning/payouts', { params });
         return response.data;
     },
 
     getPayoutById: async (id: string) => {
-        const response = await apiClient.get<{ data: Payout }>(`/api/v1/web/earning/payouts/${id}`);
+        const response = await apiClient.get<{ data: Payout }>(`/web/earning/payouts/${id}`);
         return response.data.data;
     },
 
     approvePayout: async (id: string, note?: string) => {
-        const response = await apiClient.patch<{ data: Payout }>(`/api/v1/web/earning/payouts/${id}/approve`, { note });
+        const response = await apiClient.patch<{ data: Payout }>(`/web/earning/payouts/${id}/approve`, { note });
         return response.data.data;
     },
 
     holdPayout: async (id: string, reason: string) => {
-        const response = await apiClient.patch<{ data: Payout }>(`/api/v1/web/earning/payouts/${id}/hold`, { reason });
+        const response = await apiClient.patch<{ data: Payout }>(`/web/earning/payouts/${id}/hold`, { reason });
         return response.data.data;
     },
 
     releasePayoutHold: async (id: string, note?: string) => {
-        const response = await apiClient.patch<{ data: Payout }>(`/api/v1/web/earning/payouts/${id}/release`, { note });
+        const response = await apiClient.patch<{ data: Payout }>(`/web/earning/payouts/${id}/release`, { note });
         return response.data.data;
     },
 
     markPayoutPaid: async (id: string, providerName: string, transactionRef: string, note?: string) => {
-        const response = await apiClient.patch<{ data: Payout }>(`/api/v1/web/earning/payouts/${id}/mark-paid`, { providerName, transactionRef, note });
+        const response = await apiClient.patch<{ data: Payout }>(`/web/earning/payouts/${id}/mark-paid`, { providerName, transactionRef, note });
         return response.data.data;
     },
 
     markPayoutFailed: async (id: string, reason: string, note?: string) => {
-        const response = await apiClient.patch<{ data: Payout }>(`/api/v1/web/earning/payouts/${id}/mark-failed`, { reason, note });
+        const response = await apiClient.patch<{ data: Payout }>(`/web/earning/payouts/${id}/mark-failed`, { reason, note });
         return response.data.data;
     },
 
     retryPayout: async (id: string, note?: string) => {
-        const response = await apiClient.post<{ data: Payout }>(`/api/v1/web/earning/payouts/${id}/retry`, { note });
+        const response = await apiClient.post<{ data: Payout }>(`/web/earning/payouts/${id}/retry`, { note });
         return response.data.data;
     },
 
     // User Earning Profile
     getUserEarningProfile: async (userId: string, params?: { page?: number; limit?: number; payoutsPage?: number }) => {
-        const response = await apiClient.get<{ data: UserEarningProfile }>(`/api/v1/web/earning/users/${userId}`, { params });
+        const response = await apiClient.get<{ data: UserEarningProfile }>(`/web/earning/users/${userId}`, { params });
         return response.data.data;
     },
 
     suspendEarning: async (userId: string, reason: string) => {
-        const response = await apiClient.patch<{ data: any }>(`/api/v1/web/earning/users/${userId}/suspend`, { reason });
+        const response = await apiClient.patch<{ data: any }>(`/web/earning/users/${userId}/suspend`, { reason });
         return response.data.data;
     },
 
     reinstateEarning: async (userId: string, note: string) => {
-        const response = await apiClient.patch<{ data: any }>(`/api/v1/web/earning/users/${userId}/reinstate`, { note });
+        const response = await apiClient.patch<{ data: any }>(`/web/earning/users/${userId}/reinstate`, { note });
         return response.data.data;
     },
 
     overrideEarningPlan: async (userId: string, planId: string, resetSwitchCount: boolean, note: string) => {
-        const response = await apiClient.patch<{ data: any }>(`/api/v1/web/earning/users/${userId}/plan-override`, { planId, resetSwitchCount, note });
+        const response = await apiClient.patch<{ data: any }>(`/web/earning/users/${userId}/plan-override`, { planId, resetSwitchCount, note });
         return response.data.data;
     },
 
     blockPayouts: async (userId: string, reason: string, category: string) => {
-        const response = await apiClient.patch<{ data: any }>(`/api/v1/web/earning/users/${userId}/block-payouts`, { reason, category });
+        const response = await apiClient.patch<{ data: any }>(`/web/earning/users/${userId}/block-payouts`, { reason, category });
         return response.data.data;
     },
 
     unblockPayouts: async (userId: string, note: string) => {
-        const response = await apiClient.patch<{ data: any }>(`/api/v1/web/earning/users/${userId}/unblock-payouts`, { note });
+        const response = await apiClient.patch<{ data: any }>(`/web/earning/users/${userId}/unblock-payouts`, { note });
         return response.data.data;
     },
 
     // Config
     getConfig: async () => {
-        const response = await apiClient.get<{ data: EarningConfig }>('/api/v1/web/earning/config');
+        const response = await apiClient.get<{ data: EarningConfig }>('/web/earning/config');
         return response.data.data;
     },
 
     updateConfig: async (configData: Partial<EarningConfig>) => {
-        const response = await apiClient.put<{ data: EarningConfig }>('/api/v1/web/earning/config', configData);
+        const response = await apiClient.put<{ data: EarningConfig }>('/web/earning/config', configData);
         return response.data.data;
     },
 
     // Plans
     getPlans: async () => {
-        const response = await apiClient.get<{ data: EarningPlan[] }>('/api/v1/web/earning/plans');
+        const response = await apiClient.get<{ data: EarningPlan[] }>('/web/earning/plans');
         return response.data.data;
     },
 
     createPlan: async (planData: Partial<EarningPlan>) => {
-        const response = await apiClient.post<{ data: EarningPlan }>('/api/v1/web/earning/plans', planData);
+        const response = await apiClient.post<{ data: EarningPlan }>('/web/earning/plans', planData);
         return response.data.data;
     },
 
     updatePlan: async (id: string, planData: Partial<EarningPlan>) => {
-        const response = await apiClient.put<{ data: EarningPlan }>(`/api/v1/web/earning/plans/${id}`, planData);
+        const response = await apiClient.put<{ data: EarningPlan }>(`/web/earning/plans/${id}`, planData);
         return response.data.data;
     },
 
     updatePlanStatus: async (id: string, isActive: boolean) => {
-        const response = await apiClient.patch<{ data: EarningPlan }>(`/api/v1/web/earning/plans/${id}/status`, { isActive });
+        const response = await apiClient.patch<{ data: EarningPlan }>(`/web/earning/plans/${id}/status`, { isActive });
         return response.data.data;
     },
 
     // Audit Log
     getAuditLog: async (params?: { page?: number; limit?: number; adminUserId?: string; action?: string; entityType?: string; entityId?: string; format?: string }) => {
-        const response = await apiClient.get<PaginatedResult<AuditLogItem>>('/api/v1/web/earning/audit-log', { params });
+        const response = await apiClient.get<PaginatedResult<AuditLogItem>>('/web/earning/audit-log', { params });
         return response.data;
     }
 };
