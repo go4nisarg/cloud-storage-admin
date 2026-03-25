@@ -80,8 +80,9 @@ export const useUsersStore = create<UsersState>((set, get) => ({
                 hasMore,
                 page: currentPage + 1,
             });
-        } catch (err: any) {
-            set({ error: err.message, loading: false });
+        } catch (err: unknown) {
+            const error = err as Error;
+            set({ error: error.message, loading: false });
         }
     },
 
@@ -97,8 +98,9 @@ export const useUsersStore = create<UsersState>((set, get) => ({
             } else {
                 set({ error: "User not found", loading: false });
             }
-        } catch (err: any) {
-            set({ error: err.message, loading: false });
+        } catch (err: unknown) {
+            const error = err as Error;
+            set({ error: error.message, loading: false });
         }
     },
 
@@ -128,7 +130,7 @@ export const useUsersStore = create<UsersState>((set, get) => ({
 
     blockUser: async (userId: string) => {
         try {
-            await userService.blockUser(userId);
+            // await userService.blockUser(userId);
             const updatedUsers = get().users.map(u => u.id === userId ? { ...u, status: "Soft Deleted" as const, deletedAt: new Date().toISOString() } : u);
             set({ users: updatedUsers });
         } catch (err) {

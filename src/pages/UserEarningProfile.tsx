@@ -56,6 +56,7 @@ export const UserEarningProfileView = () => {
 
     useEffect(() => {
         fetchProfile();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [id]);
 
     const openAction = (action: ActionType) => {
@@ -96,8 +97,9 @@ export const UserEarningProfileView = () => {
             }
             closeDialog();
             fetchProfile();
-        } catch (err: any) {
-            setActionError(err?.response?.data?.message || 'Action failed. Please try again.');
+        } catch (err: unknown) {
+            const error = err as import('axios').AxiosError<{ message?: string }>;
+            setActionError(error?.response?.data?.message || 'Action failed. Please try again.');
         } finally {
             setSubmitting(false);
         }
@@ -398,7 +400,7 @@ export const UserEarningProfileView = () => {
                             disabled={submitting}
                             className={
                                 activeAction === 'reinstate' || activeAction === 'unblock-payouts' ? 'bg-emerald-600 hover:bg-emerald-700' :
-                                activeAction === 'suspend' || activeAction === 'block-payouts' ? 'bg-red-600 hover:bg-red-700' : ''
+                                    activeAction === 'suspend' || activeAction === 'block-payouts' ? 'bg-red-600 hover:bg-red-700' : ''
                             }
                         >
                             {submitting ? 'Submitting...' : 'Confirm'}

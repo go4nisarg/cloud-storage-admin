@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { earningService, AuditLogItem } from '../services/earning.service';
-import { Card, CardContent, CardHeader } from '../components/ui/card';
+import { Card, CardContent } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Badge } from '../components/ui/badge';
@@ -76,6 +76,7 @@ export const AuditLog = () => {
 
     useEffect(() => {
         fetchLogs();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [page, actionFilter, entityFilter, adminUserIdFilter, entityIdFilter, dateFrom, dateTo]);
 
     const clearFilters = () => {

@@ -1,0 +1,107 @@
+
+> temp-app@0.0.0 lint
+> eslint .
+
+
+/Users/nisargkatrodiya/Documents/AC/Projects/drop-box/cloud-storage-admin/src/components/ui/badge.tsx
+  36:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+/Users/nisargkatrodiya/Documents/AC/Projects/drop-box/cloud-storage-admin/src/components/ui/button.tsx
+  57:18  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+/Users/nisargkatrodiya/Documents/AC/Projects/drop-box/cloud-storage-admin/src/pages/ActivityFeed.tsx
+  55:23  error    Unexpected any. Specify a different type                                                                      @typescript-eslint/no-explicit-any
+  71:8   warning  React Hook useEffect has a missing dependency: 'fetchFeed'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+/Users/nisargkatrodiya/Documents/AC/Projects/drop-box/cloud-storage-admin/src/pages/Analytics.tsx
+   19:64  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   20:56  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  183:60  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  232:64  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/nisargkatrodiya/Documents/AC/Projects/drop-box/cloud-storage-admin/src/pages/AuditLog.tsx
+   3:29  error    'CardHeader' is defined but never used                                                                        @typescript-eslint/no-unused-vars
+  79:8   warning  React Hook useEffect has a missing dependency: 'fetchLogs'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+/Users/nisargkatrodiya/Documents/AC/Projects/drop-box/cloud-storage-admin/src/pages/Login.tsx
+  28:23  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/nisargkatrodiya/Documents/AC/Projects/drop-box/cloud-storage-admin/src/pages/PayoutDetails.tsx
+   58:8   warning  React Hook useEffect has a missing dependency: 'fetchPayout'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  104:23  error    Unexpected any. Specify a different type                                                                        @typescript-eslint/no-explicit-any
+
+/Users/nisargkatrodiya/Documents/AC/Projects/drop-box/cloud-storage-admin/src/pages/Payouts.tsx
+  71:8  warning  React Hook useEffect has a missing dependency: 'fetchPayouts'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+/Users/nisargkatrodiya/Documents/AC/Projects/drop-box/cloud-storage-admin/src/pages/RevenueConfig.tsx
+  62:25  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/nisargkatrodiya/Documents/AC/Projects/drop-box/cloud-storage-admin/src/pages/RevenueEventDetails.tsx
+  58:8   warning  React Hook useEffect has a missing dependency: 'fetchEvent'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  93:23  error    Unexpected any. Specify a different type                                                                       @typescript-eslint/no-explicit-any
+
+/Users/nisargkatrodiya/Documents/AC/Projects/drop-box/cloud-storage-admin/src/pages/RevenueEvents.tsx
+  81:8   warning  React Hook useEffect has a missing dependency: 'fetchEvents'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  97:23  error    Unexpected any. Specify a different type                                                                        @typescript-eslint/no-explicit-any
+
+/Users/nisargkatrodiya/Documents/AC/Projects/drop-box/cloud-storage-admin/src/pages/RevenuePlans.tsx
+   85:37   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   86:56   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   87:58   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  110:66   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  129:23   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  192:43   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  195:134  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  198:119  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  202:119  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/nisargkatrodiya/Documents/AC/Projects/drop-box/cloud-storage-admin/src/pages/UserAffiliates.tsx
+  36:23  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/nisargkatrodiya/Documents/AC/Projects/drop-box/cloud-storage-admin/src/pages/UserDetails.tsx
+  237:73  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/nisargkatrodiya/Documents/AC/Projects/drop-box/cloud-storage-admin/src/pages/UserEarningProfile.tsx
+  59:8   warning  React Hook useEffect has a missing dependency: 'fetchProfile'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  99:23  error    Unexpected any. Specify a different type                                                                         @typescript-eslint/no-explicit-any
+
+/Users/nisargkatrodiya/Documents/AC/Projects/drop-box/cloud-storage-admin/src/pages/UserFileList.tsx
+  54:23  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/nisargkatrodiya/Documents/AC/Projects/drop-box/cloud-storage-admin/src/services/analytics.service.ts
+  45:11  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  51:11  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/nisargkatrodiya/Documents/AC/Projects/drop-box/cloud-storage-admin/src/services/auth.service.ts
+  19:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/nisargkatrodiya/Documents/AC/Projects/drop-box/cloud-storage-admin/src/services/earning.service.ts
+  165:19   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  166:18   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  199:19   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  200:18   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  355:100  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  407:56   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  412:56   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  417:56   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  422:56   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  427:56   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/nisargkatrodiya/Documents/AC/Projects/drop-box/cloud-storage-admin/src/services/user.service.ts
+  74:33  error  '_id' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/nisargkatrodiya/Documents/AC/Projects/drop-box/cloud-storage-admin/src/store/analytics.store.ts
+  37:23  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/nisargkatrodiya/Documents/AC/Projects/drop-box/cloud-storage-admin/src/store/reported.store.ts
+  44:23  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/nisargkatrodiya/Documents/AC/Projects/drop-box/cloud-storage-admin/src/store/users.store.ts
+   83:23  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  100:23  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/nisargkatrodiya/Documents/AC/Projects/drop-box/cloud-storage-admin/src/utils/index.ts
+  11:14  error  'e' is defined but never used  @typescript-eslint/no-unused-vars
+
+✖ 52 problems (43 errors, 9 warnings)
+

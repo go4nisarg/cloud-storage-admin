@@ -234,7 +234,7 @@ export const UserDetails = () => {
                                                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                                                 ))}
                                             </Pie>
-                                            <Tooltip formatter={(value: any) => [((value / (1024 * 1024 * 1024)).toFixed(2)) + ' GB', 'Amount']} contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }} />
+                                            <Tooltip formatter={(value: number | undefined) => [(((value || 0) / (1024 * 1024 * 1024)).toFixed(2)) + ' GB', 'Amount']} contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }} />
                                             <Legend iconType="circle" />
                                         </PieChart>
                                     </ResponsiveContainer>

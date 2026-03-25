@@ -34,8 +34,9 @@ export const useAnalyticsStore = create<AnalyticsState>((set) => ({
         try {
             const stats = await analyticsService.getDashboardStats();
             set({ dashboardStats: stats, loading: false });
-        } catch (err: any) {
-            set({ error: err.message, loading: false });
+        } catch (err: unknown) {
+            const error = err as Error;
+            set({ error: error.message, loading: false });
         }
     }
 }));

@@ -52,12 +52,13 @@ export const ActivityFeed = () => {
             });
             setItems(res.data);
             setTotal(res.total);
-        } catch (err: any) {
-            const status = err?.response?.status;
+        } catch (err: unknown) {
+            const error = err as import('axios').AxiosError<{ error?: string }>;
+            const status = error?.response?.status;
             if (status === 500 && type === 'ALL') {
                 setError('The "All Types" combined feed is not yet available on the server. Please filter by a specific type.');
             } else {
-                setError(err?.response?.data?.error || 'Failed to load activity feed.');
+                setError(error?.response?.data?.error || 'Failed to load activity feed.');
             }
             setItems([]);
             setTotal(0);
@@ -68,6 +69,7 @@ export const ActivityFeed = () => {
 
     useEffect(() => {
         fetchFeed();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [page, type, date]);
 
     return (

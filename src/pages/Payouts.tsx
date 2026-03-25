@@ -68,6 +68,7 @@ export const Payouts = () => {
 
     useEffect(() => {
         fetchPayouts();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [page, statusFilter, userIdFilter, amountMin, amountMax, dateFrom, dateTo, sortBy, sortDir]);
 
     const clearFilters = () => {

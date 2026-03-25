@@ -27,6 +27,12 @@ const EMPTY_FORM = {
 
 type PlanForm = typeof EMPTY_FORM;
 
+type ExtendedPlan = EarningPlan & {
+    tierThreshold?: number;
+    tierRewardPerViewUnits?: string;
+    tierRewardPerSignupUnits?: string;
+};
+
 export const RevenuePlans = () => {
     const [plans, setPlans] = useState<EarningPlan[]>([]);
     const [loading, setLoading] = useState(true);
@@ -82,9 +88,9 @@ export const RevenuePlans = () => {
             description: plan.description || '',
             rewardPerViewUnits: fromUnits(plan.rewardPerViewUnits),
             rewardPerSignupUnits: fromUnits(plan.rewardPerSignupUnits),
-            tierThreshold: (plan as any).tierThreshold ?? '',
-            tierRewardPerViewUnits: fromUnits((plan as any).tierRewardPerViewUnits),
-            tierRewardPerSignupUnits: fromUnits((plan as any).tierRewardPerSignupUnits),
+            tierThreshold: (plan as ExtendedPlan).tierThreshold?.toString() ?? '',
+            tierRewardPerViewUnits: fromUnits((plan as ExtendedPlan).tierRewardPerViewUnits),
+            tierRewardPerSignupUnits: fromUnits((plan as ExtendedPlan).tierRewardPerSignupUnits),
             isActive: plan.isActive,
         });
         setFormError(null);
@@ -107,7 +113,7 @@ export const RevenuePlans = () => {
         setSubmitting(true);
         setFormError(null);
         try {
-            const payload: Partial<EarningPlan> & Record<string, any> = {
+            const payload: Partial<EarningPlan> & Record<string, unknown> = {
                 planName: form.planName,
                 planType: form.planType,
                 description: form.description || undefined,
@@ -126,8 +132,9 @@ export const RevenuePlans = () => {
             }
             closeDialog();
             fetchPlans();
-        } catch (err: any) {
-            setFormError(err?.response?.data?.message || 'Failed to save plan.');
+        } catch (err: unknown) {
+            const error = err as import('axios').AxiosError<{ message?: string }>;
+            setFormError(error?.response?.data?.message || 'Failed to save plan.');
         } finally {
             setSubmitting(false);
         }
@@ -189,17 +196,17 @@ export const RevenuePlans = () => {
                                     <span className="text-slate-500">Max Rewards/Day</span>
                                     <span className="font-medium">{plan.maxRewardsPerDay}</span>
                                 </div>
-                                {(plan as any).tierThreshold && (
+                                {(plan as ExtendedPlan).tierThreshold && (
                                     <>
                                         <div className="border-t border-slate-200 dark:border-slate-700 pt-2 mt-2">
-                                            <p className="text-xs text-slate-400 uppercase font-semibold mb-1">Tier (after {(plan as any).tierThreshold} referrals)</p>
+                                            <p className="text-xs text-slate-400 uppercase font-semibold mb-1">Tier (after {(plan as ExtendedPlan).tierThreshold} referrals)</p>
                                             <div className="flex justify-between">
                                                 <span className="text-slate-500">Tier / View</span>
-                                                <span className="font-semibold text-blue-600">${convertUnits((plan as any).tierRewardPerViewUnits)}</span>
+                                                <span className="font-semibold text-blue-600">${convertUnits((plan as ExtendedPlan).tierRewardPerViewUnits)}</span>
                                             </div>
                                             <div className="flex justify-between mt-1">
                                                 <span className="text-slate-500">Tier / Signup</span>
-                                                <span className="font-semibold text-blue-600">${convertUnits((plan as any).tierRewardPerSignupUnits)}</span>
+                                                <span className="font-semibold text-blue-600">${convertUnits((plan as ExtendedPlan).tierRewardPerSignupUnits)}</span>
                                             </div>
                                         </div>
                                     </>

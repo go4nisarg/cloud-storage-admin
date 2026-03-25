@@ -41,8 +41,9 @@ export const useReportedStore = create<ReportedState>((set, get) => ({
                 hasMore,
                 page: currentPage + 1
             });
-        } catch (err: any) {
-            set({ error: err.message, loading: false });
+        } catch (err: unknown) {
+            const error = err as Error;
+            set({ error: error.message, loading: false });
         }
     },
 }));

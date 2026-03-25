@@ -59,8 +59,9 @@ export const RevenueConfig = () => {
             setSaveSuccess(true);
             fetchConfig();
             setTimeout(() => setSaveSuccess(false), 3000);
-        } catch (error: any) {
-            setSaveError(error?.response?.data?.message || 'Failed to update config');
+        } catch (error: unknown) {
+            const apiError = error as import('axios').AxiosError<{ message?: string }>;
+            setSaveError(apiError?.response?.data?.message || 'Failed to update config');
         } finally {
             setSaving(false);
         }
@@ -203,10 +204,10 @@ export const RevenueConfig = () => {
                                                 <Badge variant="outline">{entry.entity_id}</Badge>
                                             </td>
                                             <td className="px-4 py-3 text-slate-500">
-                                                {entry.before_value?.value ?? '—'}
+                                                {(entry.before_value as { value?: string })?.value ?? '—'}
                                             </td>
                                             <td className="px-4 py-3 font-medium text-slate-800 dark:text-slate-200">
-                                                {entry.after_value?.value ?? '—'}
+                                                {(entry.after_value as { value?: string })?.value ?? '—'}
                                             </td>
                                             <td className="px-4 py-3 font-mono text-xs text-slate-400">
                                                 {entry.admin_user_id.split('-')[0]}…

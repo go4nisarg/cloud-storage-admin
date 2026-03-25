@@ -42,13 +42,13 @@ export interface PaginationParams {
 // Interfaces for Responses
 export interface TrendResponse {
     success: boolean;
-    data: any;
+    data: unknown;
     message: string;
 }
 
 export interface AnalyticsListResponse {
     success: boolean;
-    data: any;
+    data: unknown;
     message: string;
 }
 

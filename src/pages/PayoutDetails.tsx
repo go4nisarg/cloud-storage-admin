@@ -55,6 +55,7 @@ export const PayoutDetails = () => {
 
     useEffect(() => {
         fetchPayout();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [id]);
 
     const openAction = (action: ActionType) => {
@@ -101,8 +102,9 @@ export const PayoutDetails = () => {
             }
             closeDialog();
             fetchPayout();
-        } catch (err: any) {
-            setActionError(err?.response?.data?.message || 'Action failed. Please try again.');
+        } catch (err: unknown) {
+            const error = err as import('axios').AxiosError<{ message?: string }>;
+            setActionError(error?.response?.data?.message || 'Action failed. Please try again.');
         } finally {
             setSubmitting(false);
         }
@@ -294,9 +296,9 @@ export const PayoutDetails = () => {
                             disabled={submitting}
                             className={
                                 activeAction === 'approve' ? 'bg-emerald-600 hover:bg-emerald-700' :
-                                activeAction === 'hold' || activeAction === 'mark-failed' ? 'bg-red-600 hover:bg-red-700' :
-                                activeAction === 'mark-paid' ? 'bg-blue-600 hover:bg-blue-700' :
-                                activeAction === 'retry' ? 'bg-indigo-600 hover:bg-indigo-700' : ''
+                                    activeAction === 'hold' || activeAction === 'mark-failed' ? 'bg-red-600 hover:bg-red-700' :
+                                        activeAction === 'mark-paid' ? 'bg-blue-600 hover:bg-blue-700' :
+                                            activeAction === 'retry' ? 'bg-indigo-600 hover:bg-indigo-700' : ''
                             }
                         >
                             {submitting ? 'Submitting...' : 'Confirm'}

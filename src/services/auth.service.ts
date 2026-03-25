@@ -16,8 +16,9 @@ export const login = async (email: string, otp: string): Promise<{ token: string
             token: token || response.data?.token,
             user: { email: resolvedEmail, role }
         };
-    } catch (error: any) {
-        throw new Error(error.response?.data?.message || "Invalid OTP");
+    } catch (error: unknown) {
+        const authError = error as import('axios').AxiosError<{ message?: string }>;
+        throw new Error(authError.response?.data?.message || "Invalid OTP");
     }
 };
 

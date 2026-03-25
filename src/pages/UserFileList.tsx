@@ -9,21 +9,21 @@ import { formatDate } from "../utils";
 type FileType = "images" | "videos" | "audio" | "zip" | "documents" | "other";
 
 const SOURCE_TYPE_MAP: Record<FileType, string> = {
-    images:    "IMAGE",
-    videos:    "VIDEO",
-    audio:     "AUDIO",
-    zip:       "ZIP",
+    images: "IMAGE",
+    videos: "VIDEO",
+    audio: "AUDIO",
+    zip: "ZIP",
     documents: "DOCUMENT",
-    other:     "OTHER",
+    other: "OTHER",
 };
 
 const TYPE_META: Record<FileType, { label: string; icon: React.ReactNode; color: string; bg: string }> = {
-    images:    { label: "Images",    icon: <Image className="w-4 h-4" />,    color: "text-blue-600",    bg: "bg-blue-100 dark:bg-blue-900/40" },
-    videos:    { label: "Videos",    icon: <Video className="w-4 h-4" />,    color: "text-emerald-600", bg: "bg-emerald-100 dark:bg-emerald-900/40" },
-    audio:     { label: "Audio",     icon: <Music className="w-4 h-4" />,    color: "text-amber-600",   bg: "bg-amber-100 dark:bg-amber-900/40" },
-    zip:       { label: "Zip Files", icon: <Archive className="w-4 h-4" />,  color: "text-rose-600",    bg: "bg-rose-100 dark:bg-rose-900/40" },
-    documents: { label: "Documents", icon: <FileText className="w-4 h-4" />, color: "text-indigo-600",  bg: "bg-indigo-100 dark:bg-indigo-900/40" },
-    other:     { label: "Other",     icon: <File className="w-4 h-4" />,     color: "text-slate-600",   bg: "bg-slate-100 dark:bg-slate-800" },
+    images: { label: "Images", icon: <Image className="w-4 h-4" />, color: "text-blue-600", bg: "bg-blue-100 dark:bg-blue-900/40" },
+    videos: { label: "Videos", icon: <Video className="w-4 h-4" />, color: "text-emerald-600", bg: "bg-emerald-100 dark:bg-emerald-900/40" },
+    audio: { label: "Audio", icon: <Music className="w-4 h-4" />, color: "text-amber-600", bg: "bg-amber-100 dark:bg-amber-900/40" },
+    zip: { label: "Zip Files", icon: <Archive className="w-4 h-4" />, color: "text-rose-600", bg: "bg-rose-100 dark:bg-rose-900/40" },
+    documents: { label: "Documents", icon: <FileText className="w-4 h-4" />, color: "text-indigo-600", bg: "bg-indigo-100 dark:bg-indigo-900/40" },
+    other: { label: "Other", icon: <File className="w-4 h-4" />, color: "text-slate-600", bg: "bg-slate-100 dark:bg-slate-800" },
 };
 
 export const UserFileList = () => {
@@ -51,8 +51,9 @@ export const UserFileList = () => {
             setTotalPages(res.meta.totalPages);
             setTotal(res.meta.total);
             setPage(pageNum);
-        } catch (err: any) {
-            setError(err.message ?? "Failed to load files");
+        } catch (err: unknown) {
+            const error = err as import('axios').AxiosError<{ message?: string }>;
+            setError(error?.response?.data?.message || error.message || "Failed to load files");
         } finally {
             setLoading(false);
         }
@@ -145,9 +146,8 @@ export const UserFileList = () => {
                 {files.map((file, idx) => (
                     <div
                         key={file.id}
-                        className={`grid grid-cols-[auto_1fr_auto_auto] gap-4 items-center px-6 py-4 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-900/50 transition-colors ${
-                            idx < files.length - 1 ? "border-b border-slate-100 dark:border-slate-800" : ""
-                        }`}
+                        className={`grid grid-cols-[auto_1fr_auto_auto] gap-4 items-center px-6 py-4 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-900/50 transition-colors ${idx < files.length - 1 ? "border-b border-slate-100 dark:border-slate-800" : ""
+                            }`}
                         onClick={() => openPreview(file)}
                     >
                         {/* Thumbnail or icon */}

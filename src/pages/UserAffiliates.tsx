@@ -33,8 +33,9 @@ export const UserAffiliates = () => {
             setTotal(res.meta.total);
             setPage(pageNum);
             setHasMore(pageNum < res.meta.totalPages);
-        } catch (err: any) {
-            setError(err.message ?? "Failed to load affiliates");
+        } catch (err: unknown) {
+            const error = err as import('axios').AxiosError<{ message?: string }>;
+            setError(error?.response?.data?.message || error.message || "Failed to load affiliates");
         } finally {
             setLoading(false);
         }

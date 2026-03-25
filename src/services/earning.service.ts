@@ -162,8 +162,8 @@ export interface AuditLogItem {
     action: string;
     entity_type: string;
     entity_id: string;
-    before_value: any;
-    after_value: any;
+    before_value: unknown;
+    after_value: unknown;
     note: string | null;
     created_at: string;
 }
@@ -196,8 +196,8 @@ export interface SystemConfigHistory {
     action: string;
     entity_type: string;
     entity_id: string;
-    before_value: any;
-    after_value: any;
+    before_value: unknown;
+    after_value: unknown;
     note: string | null;
     created_at: string;
 }
@@ -352,7 +352,7 @@ export const earningService = {
     },
 
     bulkActionEvents: async (ids: string[], action: 'APPROVE' | 'REJECT', reason?: string, note?: string) => {
-        const response = await apiClient.post<{ data: { succeeded: number; failed: number; errors: any[] } }>('/web/earning/events/bulk-action', { ids, action, reason, note });
+        const response = await apiClient.post<{ data: { succeeded: number; failed: number; errors: unknown[] } }>('/web/earning/events/bulk-action', { ids, action, reason, note });
         return response.data.data;
     },
 
@@ -404,27 +404,27 @@ export const earningService = {
     },
 
     suspendEarning: async (userId: string, reason: string) => {
-        const response = await apiClient.patch<{ data: any }>(`/web/earning/users/${userId}/suspend`, { reason });
+        const response = await apiClient.patch<{ data: unknown }>(`/web/earning/users/${userId}/suspend`, { reason });
         return response.data.data;
     },
 
     reinstateEarning: async (userId: string, note: string) => {
-        const response = await apiClient.patch<{ data: any }>(`/web/earning/users/${userId}/reinstate`, { note });
+        const response = await apiClient.patch<{ data: unknown }>(`/web/earning/users/${userId}/reinstate`, { note });
         return response.data.data;
     },
 
     overrideEarningPlan: async (userId: string, planId: string, resetSwitchCount: boolean, note: string) => {
-        const response = await apiClient.patch<{ data: any }>(`/web/earning/users/${userId}/plan-override`, { planId, resetSwitchCount, note });
+        const response = await apiClient.patch<{ data: unknown }>(`/web/earning/users/${userId}/plan-override`, { planId, resetSwitchCount, note });
         return response.data.data;
     },
 
     blockPayouts: async (userId: string, reason: string, category: string) => {
-        const response = await apiClient.patch<{ data: any }>(`/web/earning/users/${userId}/block-payouts`, { reason, category });
+        const response = await apiClient.patch<{ data: unknown }>(`/web/earning/users/${userId}/block-payouts`, { reason, category });
         return response.data.data;
     },
 
     unblockPayouts: async (userId: string, note: string) => {
-        const response = await apiClient.patch<{ data: any }>(`/web/earning/users/${userId}/unblock-payouts`, { note });
+        const response = await apiClient.patch<{ data: unknown }>(`/web/earning/users/${userId}/unblock-payouts`, { note });
         return response.data.data;
     },
 

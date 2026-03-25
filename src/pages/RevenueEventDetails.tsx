@@ -55,6 +55,7 @@ export const RevenueEventDetails = () => {
 
     useEffect(() => {
         fetchEvent();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [id]);
 
     const openAction = (action: ActionType) => {
@@ -90,8 +91,9 @@ export const RevenueEventDetails = () => {
             }
             closeDialog();
             fetchEvent();
-        } catch (err: any) {
-            setActionError(err?.response?.data?.message || 'Action failed. Please try again.');
+        } catch (err: unknown) {
+            const error = err as import('axios').AxiosError<{ message?: string }>;
+            setActionError(error?.response?.data?.message || 'Action failed. Please try again.');
         } finally {
             setSubmitting(false);
         }
@@ -295,8 +297,8 @@ export const RevenueEventDetails = () => {
                             disabled={submitting}
                             className={
                                 activeAction === 'approve' ? 'bg-emerald-600 hover:bg-emerald-700' :
-                                activeAction === 'reject' ? 'bg-red-600 hover:bg-red-700' :
-                                activeAction === 'override-fraud' ? 'bg-orange-600 hover:bg-orange-700' : ''
+                                    activeAction === 'reject' ? 'bg-red-600 hover:bg-red-700' :
+                                        activeAction === 'override-fraud' ? 'bg-orange-600 hover:bg-orange-700' : ''
                             }
                         >
                             {submitting ? 'Submitting...' : 'Confirm'}

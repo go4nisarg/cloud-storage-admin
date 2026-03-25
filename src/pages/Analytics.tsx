@@ -11,13 +11,22 @@ import { mockDownloads, mockViews } from "../services/mockData";
 import { getTopDownloaded, getTopViewed, getTopUsers } from "../services/analytics.service";
 import { TopUser } from "../types";
 
+interface FileMetrics {
+    id?: string;
+    name?: string;
+    sourceType?: string;
+    url?: string;
+    viewCount?: number;
+    downloadCount?: number;
+}
+
 export const Analytics = () => {
     const navigate = useNavigate();
     const { loading } = useUsersStore();
 
     // New states for real API data
-    const [topDownloadedData, setTopDownloadedData] = useState<any[]>([]);
-    const [topViewedData, setTopViewedData] = useState<any[]>([]);
+    const [topDownloadedData, setTopDownloadedData] = useState<FileMetrics[]>([]);
+    const [topViewedData, setTopViewedData] = useState<FileMetrics[]>([]);
     const [topUsersData, setTopUsersData] = useState<TopUser[]>([]);
     const [analyticsLoading, setAnalyticsLoading] = useState(true);
 
@@ -29,9 +38,9 @@ export const Analytics = () => {
                 getTopViewed({ limit: 10 }),
                 getTopUsers({ limit: 10 })
             ]);
-            setTopDownloadedData(downloadedRes.data || []);
-            setTopViewedData(viewedRes.data || []);
-            setTopUsersData(topUsersRes.data || []);
+            setTopDownloadedData((downloadedRes.data as FileMetrics[]) || []);
+            setTopViewedData((viewedRes.data as FileMetrics[]) || []);
+            setTopUsersData((topUsersRes.data as TopUser[]) || []);
         } catch (error) {
             console.error("Failed to fetch analytics", error);
         } finally {
@@ -180,7 +189,7 @@ export const Analytics = () => {
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                {topViewedData?.map((item: any, idx: number) => (
+                                {topViewedData?.map((item: FileMetrics, idx: number) => (
                                     <TableRow
                                         key={item?.id || idx}
                                         className="hover:bg-slate-50/50 dark:hover:bg-slate-800/50 cursor-pointer"
@@ -229,7 +238,7 @@ export const Analytics = () => {
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                {topDownloadedData?.map((item: any, idx: number) => (
+                                {topDownloadedData?.map((item: FileMetrics, idx: number) => (
                                     <TableRow
                                         key={item?.id || idx}
                                         className={`hover:bg-slate-50/50 dark:hover:bg-slate-800/50 ${item?.id ? "cursor-pointer" : ""}`}

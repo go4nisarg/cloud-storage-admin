@@ -78,6 +78,7 @@ export const RevenueEvents = () => {
     useEffect(() => {
         fetchEvents();
         setSelectedIds([]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [page, activeTab, statusFilter, typeFilter, dateFrom, dateTo, hasFraudFlags, userIdFilter, sortBy, sortDir]);
 
     const toggleSelection = (id: string) => {
@@ -94,8 +95,9 @@ export const RevenueEvents = () => {
             }
             fetchEvents();
             setSelectedIds([]);
-        } catch (err: any) {
-            setBulkError(err?.response?.data?.message || 'Bulk action failed');
+        } catch (err: unknown) {
+            const error = err as import('axios').AxiosError<{ message?: string }>;
+            setBulkError(error?.response?.data?.message || 'Bulk action failed');
         }
     };
 

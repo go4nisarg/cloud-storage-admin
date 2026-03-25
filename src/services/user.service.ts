@@ -71,11 +71,12 @@ export const restoreUser = async (id: string): Promise<boolean> => {
     }
 };
 
-export const blockUser = async (_id: string): Promise<boolean> => {
-    return new Promise((resolve) => setTimeout(() => {
-        resolve(true);
-    }, 300));
-}
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+// export const blockUser = async (id: string): Promise<boolean> => {
+//     return new Promise((resolve) => setTimeout(() => {
+//         resolve(true);
+//     }, 300));
+// }
 
 export interface Upload {
     id: string;

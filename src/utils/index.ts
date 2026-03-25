@@ -8,7 +8,7 @@ export const bytesToGB = (bytes: number): number => {
 export const formatDate = (dateString: string): string => {
     try {
         return format(new Date(dateString), "MMM dd, yyyy");
-    } catch (e) {
+    } catch {
         return dateString;
     }
 };
