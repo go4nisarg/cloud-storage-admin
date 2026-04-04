@@ -20,6 +20,7 @@ import { UserEarningProfileView } from './pages/UserEarningProfile';
 import { RevenueConfig } from './pages/RevenueConfig';
 import { RevenuePlans } from './pages/RevenuePlans';
 import { AuditLog } from './pages/AuditLog';
+import { AppConfig } from './pages/AppConfig';
 import { TooltipProvider } from './components/ui/tooltip';
 import { useAuthStore, isSuperAdmin } from './store/auth.store';
 
@@ -46,6 +47,7 @@ function App() {
                 <Route path="/users" element={<UsersManagement />} />
                 <Route path="/user/:id" element={<UserDetails />} />
                 <Route path="/analytics" element={<Analytics />} />
+                <Route path="/app-config" element={<AppConfig />} />
                 <Route path="/file/:id" element={<FilePreview />} />
                 <Route path="/user/:userId/files/:fileType" element={<UserFileList />} />
                 <Route path="/user/:userId/affiliates" element={<UserAffiliates />} />
