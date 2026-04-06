@@ -20,6 +20,7 @@ const EVENT_STATUS_COLORS: Record<string, string> = {
     APPROVED: 'bg-emerald-100 text-emerald-800',
     REJECTED: 'bg-red-100 text-red-800',
     PAYABLE: 'bg-blue-100 text-blue-800',
+    IN_PAYOUT: 'bg-violet-100 text-violet-800',
     PAID: 'bg-indigo-100 text-indigo-800',
 };
 
@@ -284,20 +285,30 @@ export const UserEarningProfileView = () => {
                                 <th className="px-4 py-2 font-medium text-slate-500 text-xs">Date</th>
                                 <th className="px-4 py-2 font-medium text-slate-500 text-xs">Status</th>
                                 <th className="px-4 py-2 font-medium text-slate-500 text-xs">Paid At</th>
+                                <th className="px-4 py-2 font-medium text-slate-500 text-xs">Bank Account</th>
                                 <th className="px-4 py-2 font-medium text-slate-500 text-xs text-right">Amount</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-100 dark:divide-slate-800 text-slate-600 dark:text-slate-300">
-                            {profile.payouts.map(p => (
-                                <tr key={p.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/40">
-                                    <td className="px-4 py-2 text-xs">{p.created_at || p.createdAt ? format(new Date((p.created_at || p.createdAt) as string), 'MMM dd, yyyy') : '—'}</td>
-                                    <td className="px-4 py-2 text-xs font-medium">{p.status}</td>
-                                    <td className="px-4 py-2 text-xs">{p.paid_at || p.paidAt ? format(new Date((p.paid_at || p.paidAt) as string), 'MMM dd, yyyy') : '—'}</td>
-                                    <td className="px-4 py-2 text-right font-medium">${convertUnits(p.total_units || p.totalUnits)}</td>
-                                </tr>
-                            ))}
+                            {profile.payouts.map(p => {
+                                const acctNum = p.snapshot_account_number || p.snapshotAccountNumber;
+                                const ifsc = p.snapshot_ifsc_code || p.snapshotIfscCode;
+                                return (
+                                    <tr key={p.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/40">
+                                        <td className="px-4 py-2 text-xs">{p.created_at || p.createdAt ? format(new Date((p.created_at || p.createdAt) as string), 'MMM dd, yyyy') : '—'}</td>
+                                        <td className="px-4 py-2 text-xs font-medium">{p.status}</td>
+                                        <td className="px-4 py-2 text-xs">{p.paid_at || p.paidAt ? format(new Date((p.paid_at || p.paidAt) as string), 'MMM dd, yyyy') : '—'}</td>
+                                        <td className="px-4 py-2 text-xs font-mono">
+                                            {acctNum
+                                                ? <span>****{acctNum.slice(-4)}{ifsc ? ` · ${ifsc}` : ''}</span>
+                                                : <span className="text-slate-400">Unavailable</span>}
+                                        </td>
+                                        <td className="px-4 py-2 text-right font-medium">${convertUnits(p.total_units || p.totalUnits)}</td>
+                                    </tr>
+                                );
+                            })}
                             {profile.payouts.length === 0 && (
-                                <tr><td colSpan={4} className="text-center p-4 text-slate-500">No recent payouts</td></tr>
+                                <tr><td colSpan={5} className="text-center p-4 text-slate-500">No recent payouts</td></tr>
                             )}
                         </tbody>
                     </table>

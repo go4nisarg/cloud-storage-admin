@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { OverviewResponse, earningService } from '../services/earning.service';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../components/ui/card';
 import { Badge } from '../components/ui/badge';
-import { Activity, DollarSign, PieChart, AlertCircle, CheckCircle2, Clock } from 'lucide-react';
+import { Activity, DollarSign, PieChart, AlertCircle, CheckCircle2, Clock, Hourglass } from 'lucide-react';
 import { convertUnits } from '../utils';
 
 export const RevenueOverview = () => {
@@ -29,6 +29,7 @@ export const RevenueOverview = () => {
         APPROVED: <CheckCircle2 className="w-5 h-5 text-emerald-500" />,
         REJECTED: <AlertCircle className="w-5 h-5 text-red-500" />,
         PAYABLE: <DollarSign className="w-5 h-5 text-blue-500" />,
+        IN_PAYOUT: <Hourglass className="w-5 h-5 text-violet-500" />,
         PAID: <CheckCircle2 className="w-5 h-5 text-blue-600" />,
         PROCESSING: <Activity className="w-5 h-5 text-indigo-500" />,
         FAILED: <AlertCircle className="w-5 h-5 text-red-600" />,
@@ -39,6 +40,7 @@ export const RevenueOverview = () => {
         APPROVED: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-300',
         REJECTED: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300',
         PAYABLE: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300',
+        IN_PAYOUT: 'bg-violet-100 text-violet-800 dark:bg-violet-900 dark:text-violet-300',
         PAID: 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-300',
         PROCESSING: 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300',
         FAILED: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300',
@@ -62,7 +64,7 @@ export const RevenueOverview = () => {
                 <Card>
                     <CardHeader>
                         <CardTitle>Revenue Events</CardTitle>
-                        <CardDescription>Platform-wide counts and totals for revenue events</CardDescription>
+                        <CardDescription>Platform-wide counts and totals for revenue events. <span className="text-slate-400">Payable = available to withdraw, not yet in a payout.</span></CardDescription>
                     </CardHeader>
                     <CardContent>
                         <div className="space-y-4">

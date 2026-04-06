@@ -10,7 +10,7 @@ import { format } from 'date-fns';
 import { Filter, X } from 'lucide-react';
 import { convertUnits } from '../utils';
 
-const STATUS_OPTIONS = ['PENDING', 'APPROVED', 'REJECTED', 'PAYABLE', 'PAID'];
+const STATUS_OPTIONS = ['PENDING', 'APPROVED', 'REJECTED', 'PAYABLE', 'IN_PAYOUT', 'PAID'];
 const TYPE_OPTIONS = ['FILE_VIEW', 'SIGNUP_REFERRAL'];
 const SORT_OPTIONS = [
     { value: 'inserted_at', label: 'Date Added' },
@@ -24,6 +24,7 @@ const STATUS_COLORS: Record<string, string> = {
     APPROVED: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-300',
     REJECTED: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300',
     PAYABLE: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300',
+    IN_PAYOUT: 'bg-violet-100 text-violet-800 dark:bg-violet-900 dark:text-violet-300',
     PAID: 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-300',
 };
 
@@ -114,6 +115,10 @@ export const RevenueEvents = () => {
     };
 
     const hasActiveFilters = statusFilter || typeFilter || dateFrom || dateTo || hasFraudFlags || userIdFilter;
+
+    const selectedInPayoutCount = (data?.data ?? []).filter(
+        item => selectedIds.includes(item.id) && item.status === 'IN_PAYOUT'
+    ).length;
 
     const renderTable = () => (
         <div className="rounded-md border border-slate-200 dark:border-slate-800 overflow-hidden">
@@ -322,6 +327,11 @@ export const RevenueEvents = () => {
                     {bulkError && (
                         <div className="mb-3 text-sm text-red-600 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-md px-4 py-2">
                             {bulkError}
+                        </div>
+                    )}
+                    {selectedInPayoutCount > 0 && (
+                        <div className="mb-3 text-sm text-amber-700 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-md px-4 py-2">
+                            {selectedInPayoutCount} selected event{selectedInPayoutCount > 1 ? 's are' : ' is'} <strong>IN_PAYOUT</strong> and will be skipped for Reject — fail the payout first to release them.
                         </div>
                     )}
 

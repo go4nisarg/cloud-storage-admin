@@ -20,6 +20,7 @@ const STATUS_COLORS: Record<string, string> = {
     APPROVED: 'bg-emerald-100 text-emerald-800',
     REJECTED: 'bg-red-100 text-red-800',
     PAYABLE: 'bg-blue-100 text-blue-800',
+    IN_PAYOUT: 'bg-violet-100 text-violet-800',
     PAID: 'bg-indigo-100 text-indigo-800',
 };
 
@@ -104,7 +105,13 @@ export const RevenueEventDetails = () => {
 
     const fraudFlags = event.fraud_flags || event.fraudFlags || [];
     const overriddenFlags = event.fraud_flags_overridden || event.fraudFlagsOverridden || [];
-    const canAct = ['PENDING', 'APPROVED'].includes(event.status);
+    const isInPayout = event.status === 'IN_PAYOUT';
+    const inPayoutTooltip = 'Fail the payout first to release this event';
+    const canApprove = ['PENDING', 'APPROVED', 'REJECTED'].includes(event.status);
+    const canReject = ['PENDING', 'APPROVED', 'PAYABLE'].includes(event.status);
+    const canFlag = ['PENDING', 'APPROVED', 'PAYABLE'].includes(event.status);
+    const canOverrideFraud = ['PENDING', 'APPROVED'].includes(event.status) && fraudFlags.length > 0;
+    const payoutId = event.payout_id || event.payoutId;
 
     return (
         <div className="space-y-6">
@@ -116,27 +123,39 @@ export const RevenueEventDetails = () => {
                     <h1 className="text-2xl font-semibold text-slate-800 dark:text-white">Event Details</h1>
                 </div>
                 <div className="flex items-center gap-2 flex-wrap justify-end">
-                    {canAct && (
-                        <>
-                            <Button onClick={() => openAction('approve')} className="bg-emerald-600 hover:bg-emerald-700">
-                                Approve
-                            </Button>
-                            <Button onClick={() => openAction('reject')} variant="destructive">
-                                Reject
-                            </Button>
-                        </>
+                    {canApprove && (
+                        <Button onClick={() => openAction('approve')} className="bg-emerald-600 hover:bg-emerald-700">
+                            Approve
+                        </Button>
                     )}
-                    {fraudFlags.length > 0 && (
+                    {(canReject || isInPayout) && (
                         <Button
-                            onClick={() => openAction('override-fraud')}
+                            onClick={() => !isInPayout && openAction('reject')}
+                            variant="destructive"
+                            disabled={isInPayout}
+                            title={isInPayout ? inPayoutTooltip : undefined}
+                        >
+                            Reject
+                        </Button>
+                    )}
+                    {(canOverrideFraud || (isInPayout && fraudFlags.length > 0)) && (
+                        <Button
+                            onClick={() => !isInPayout && openAction('override-fraud')}
                             variant="outline"
                             className="border-red-500 text-red-500 hover:bg-red-50"
+                            disabled={isInPayout}
+                            title={isInPayout ? inPayoutTooltip : undefined}
                         >
                             Override Fraud Flags
                         </Button>
                     )}
-                    {canAct && (
-                        <Button onClick={() => openAction('flag')} variant="outline">
+                    {(canFlag || isInPayout) && (
+                        <Button
+                            onClick={() => !isInPayout && openAction('flag')}
+                            variant="outline"
+                            disabled={isInPayout}
+                            title={isInPayout ? inPayoutTooltip : undefined}
+                        >
                             Flag Manually
                         </Button>
                     )}
@@ -162,6 +181,16 @@ export const RevenueEventDetails = () => {
                         } />
                         {(event.event_timestamp) && (
                             <Row label="Event Timestamp" value={format(new Date(event.event_timestamp), 'PPP p')} />
+                        )}
+                        {payoutId && (
+                            <Row label="Linked Payout" value={
+                                <button
+                                    onClick={() => navigate(`/revenue/payouts/${payoutId}`)}
+                                    className="inline-flex items-center gap-1 text-blue-600 hover:underline text-sm font-medium"
+                                >
+                                    View Payout →
+                                </button>
+                            } />
                         )}
                     </CardContent>
                 </Card>
@@ -193,11 +222,11 @@ export const RevenueEventDetails = () => {
                             ? <div className="flex gap-1 flex-wrap">{fraudFlags.map(f => <Badge key={f} variant="destructive" className="text-xs">{f}</Badge>)}</div>
                             : <span className="text-slate-400 text-sm">None</span>
                     } />
-                    {overriddenFlags.length > 0 && (
-                        <Row label="Overridden Flags" value={
-                            <div className="flex gap-1 flex-wrap">{overriddenFlags.map(f => <Badge key={f} variant="secondary" className="text-xs line-through">{f}</Badge>)}</div>
-                        } />
-                    )}
+                    <Row label="Overridden Flags" value={
+                        overriddenFlags.length > 0
+                            ? <div className="flex gap-1 flex-wrap">{overriddenFlags.map(f => <Badge key={f} variant="secondary" className="text-xs line-through text-slate-400">{f}</Badge>)}</div>
+                            : <span className="text-slate-400 text-sm">None</span>
+                    } />
                     <Row label="Approved By" value={event.approved_by || event.approvedBy || '—'} />
                     <Row label="Approved At" value={
                         (event.approved_at || event.approvedAt)

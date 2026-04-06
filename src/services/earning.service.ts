@@ -67,6 +67,8 @@ export interface RevenueEvent {
     adminNote?: string | null;
     beneficiary_name?: string;
     actor_name?: string;
+    payout_id?: string | null;
+    payoutId?: string | null;
 }
 
 export interface Payout {
@@ -111,6 +113,26 @@ export interface Payout {
     user_email?: string;
     event_count?: string;
     event_sum_units?: string;
+    // Period covered by this payout
+    period_start?: string | null;
+    periodStart?: string | null;
+    period_end?: string | null;
+    periodEnd?: string | null;
+    // Destination bank account snapshot (taken at withdrawal request time)
+    payment_method_id?: string | null;
+    paymentMethodId?: string | null;
+    snapshot_account_number?: string | null;
+    snapshotAccountNumber?: string | null;
+    snapshot_ifsc_code?: string | null;
+    snapshotIfscCode?: string | null;
+    snapshot_account_country?: string | null;
+    snapshotAccountCountry?: string | null;
+    // Set on mark-paid (mirrors transaction_ref)
+    payment_reference?: string | null;
+    paymentReference?: string | null;
+    // Distinct from failed_reason
+    rejection_reason?: string | null;
+    rejectionReason?: string | null;
 }
 
 export interface UserEarningProfile {

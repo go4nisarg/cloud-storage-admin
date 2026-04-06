@@ -7,7 +7,6 @@ import { Input } from '../components/ui/input';
 import {
     Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription
 } from '../components/ui/dialog';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import { ArrowLeft, AlertTriangle } from 'lucide-react';
 import { format } from 'date-fns';
 import { convertUnits } from '../utils';
@@ -36,7 +35,7 @@ export const PayoutDetails = () => {
     // Form fields
     const [note, setNote] = useState('');
     const [holdReason, setHoldReason] = useState('');
-    const [failReason, setFailReason] = useState('INVALID_BANK_DETAILS');
+    const [failReason, setFailReason] = useState('');
     const [providerName, setProviderName] = useState('');
     const [transactionRef, setTransactionRef] = useState('');
 
@@ -89,13 +88,18 @@ export const PayoutDetails = () => {
             } else if (activeAction === 'release') {
                 await earningService.releasePayoutHold(payout.id, note || undefined);
             } else if (activeAction === 'mark-paid') {
-                if (!providerName.trim() || !transactionRef.trim()) {
-                    setActionError('Provider name and transaction reference are required.');
+                if (!transactionRef.trim()) {
+                    setActionError('Transaction reference is required.');
                     setSubmitting(false);
                     return;
                 }
                 await earningService.markPayoutPaid(payout.id, providerName, transactionRef, note || undefined);
             } else if (activeAction === 'mark-failed') {
+                if (!failReason.trim()) {
+                    setActionError('Failure reason is required.');
+                    setSubmitting(false);
+                    return;
+                }
                 await earningService.markPayoutFailed(payout.id, failReason, note || undefined);
             } else if (activeAction === 'retry') {
                 await earningService.retryPayout(payout.id, note || undefined);
@@ -171,6 +175,11 @@ export const PayoutDetails = () => {
                         <Row label="Amount" value={`$${convertUnits(payout.total_units || payout.totalUnits)} ${payout.currency}`} />
                         <Row label="Event Count" value={payout.event_count || '—'} />
                         <Row label="Event Sum" value={payout.event_sum_units ? `$${convertUnits(payout.event_sum_units)}` : '—'} />
+                        <Row label="Period" value={
+                            (payout.period_start || payout.periodStart) && (payout.period_end || payout.periodEnd)
+                                ? `${format(new Date((payout.period_start || payout.periodStart) as string), 'MMM d, yyyy')} – ${format(new Date((payout.period_end || payout.periodEnd) as string), 'MMM d, yyyy')}`
+                                : '—'
+                        } />
                         <Row label="Created At" value={
                             (payout.created_at || payout.createdAt)
                                 ? format(new Date((payout.created_at || payout.createdAt) as string), 'PPP p')
@@ -203,6 +212,64 @@ export const PayoutDetails = () => {
                     </CardContent>
                 </Card>
             </div>
+
+            {/* Destination Bank Account */}
+            <Card>
+                <CardHeader><CardTitle>Destination Bank Account</CardTitle></CardHeader>
+                <CardContent className="space-y-3">
+                    {(payout.snapshot_account_number || payout.snapshotAccountNumber) ? (
+                        <>
+                            <Row label="Account Number" value={
+                                <span className="font-mono">
+                                    ****{(payout.snapshot_account_number || payout.snapshotAccountNumber)!.slice(-4)}
+                                </span>
+                            } />
+                            <Row label="IFSC Code" value={payout.snapshot_ifsc_code || payout.snapshotIfscCode || '—'} />
+                            <Row label="Country" value={payout.snapshot_account_country || payout.snapshotAccountCountry || '—'} />
+                        </>
+                    ) : (
+                        <div className="flex items-start gap-2 text-sm text-amber-700 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-md px-3 py-2">
+                            <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
+                            Bank account details unavailable — payment method was deleted before this record was created.
+                        </div>
+                    )}
+                </CardContent>
+            </Card>
+
+            {/* Admin Audit Trail */}
+            <Card>
+                <CardHeader><CardTitle>Admin Audit Trail</CardTitle></CardHeader>
+                <CardContent className="space-y-3">
+                    <Row label="Approved By" value={payout.approved_by || payout.approvedBy || '—'} />
+                    <Row label="Approved At" value={
+                        (payout.approved_at || payout.approvedAt)
+                            ? format(new Date((payout.approved_at || payout.approvedAt) as string), 'PPP p')
+                            : '—'
+                    } />
+                    <Row label="Held By" value={payout.held_by || payout.heldBy || '—'} />
+                    <Row label="Held At" value={
+                        (payout.held_at || payout.heldAt)
+                            ? format(new Date((payout.held_at || payout.heldAt) as string), 'PPP p')
+                            : '—'
+                    } />
+                    <Row label="Released By" value={payout.released_by || payout.releasedBy || '—'} />
+                    <Row label="Released At" value={
+                        (payout.released_at || payout.releasedAt)
+                            ? format(new Date((payout.released_at || payout.releasedAt) as string), 'PPP p')
+                            : '—'
+                    } />
+                </CardContent>
+            </Card>
+
+            {payout.status === 'FAILED' && (
+                <div className="flex items-start gap-2 text-sm text-amber-700 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-md px-4 py-3">
+                    <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
+                    <span>
+                        Retry may be blocked if the user has already created a new withdrawal request that claimed these events.
+                        If retry fails, check whether the events have been re-claimed by a newer payout.
+                    </span>
+                </div>
+            )}
 
             {/* Action Dialog */}
             <Dialog open={activeAction !== null} onOpenChange={open => !open && closeDialog()}>
@@ -240,7 +307,7 @@ export const PayoutDetails = () => {
                         {activeAction === 'mark-paid' && (
                             <>
                                 <div className="space-y-1">
-                                    <label className="text-sm font-medium">Payment Provider <span className="text-red-500">*</span></label>
+                                    <label className="text-sm font-medium">Payment Provider <span className="text-slate-400">(optional)</span></label>
                                     <Input
                                         value={providerName}
                                         onChange={e => setProviderName(e.target.value)}
@@ -258,20 +325,24 @@ export const PayoutDetails = () => {
                             </>
                         )}
                         {activeAction === 'mark-failed' && (
-                            <div className="space-y-1">
-                                <label className="text-sm font-medium">Failure Reason <span className="text-red-500">*</span></label>
-                                <Select value={failReason} onValueChange={setFailReason}>
-                                    <SelectTrigger>
-                                        <SelectValue />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="INVALID_BANK_DETAILS">INVALID_BANK_DETAILS</SelectItem>
-                                        <SelectItem value="ACCOUNT_FROZEN">ACCOUNT_FROZEN</SelectItem>
-                                        <SelectItem value="PROVIDER_ERROR">PROVIDER_ERROR</SelectItem>
-                                        <SelectItem value="OTHER">OTHER</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                            </div>
+                            <>
+                                <div className="flex items-start gap-2 text-sm text-amber-700 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-md px-3 py-2">
+                                    <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
+                                    <span>
+                                        Marking this payout as failed will release{' '}
+                                        <strong>{payout.event_count ?? 'all'} event{payout.event_count === '1' ? '' : 's'}</strong>{' '}
+                                        back to Payable. The user can then request a new withdrawal.
+                                    </span>
+                                </div>
+                                <div className="space-y-1">
+                                    <label className="text-sm font-medium">Failure Reason <span className="text-red-500">*</span></label>
+                                    <Input
+                                        value={failReason}
+                                        onChange={e => setFailReason(e.target.value)}
+                                        placeholder="e.g. Invalid bank details, account frozen..."
+                                    />
+                                </div>
+                            </>
                         )}
                         <div className="space-y-1">
                             <label className="text-sm font-medium">Note <span className="text-slate-400">(optional)</span></label>
