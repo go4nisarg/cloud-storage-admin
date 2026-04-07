@@ -29,15 +29,15 @@ export const DashboardLayout = () => {
         {
             name: 'Revenue',
             icon: DollarSign,
-            superAdminOnly: true,
+            superAdminOnly: false,
             subItems: [
-                { name: 'Overview', path: '/revenue' },
-                { name: 'Revenue Events', path: '/revenue/events' },
-                { name: 'Payouts', path: '/revenue/payouts' },
-                { name: 'Earning Plans', path: '/revenue/plans' },
-                { name: 'Revenue Config', path: '/revenue/config' },
-                { name: 'Activity Feed', path: '/activity' },
-                { name: 'Audit Log', path: '/revenue/audit-log' },
+                { name: 'Overview', path: '/revenue', superAdminOnly: false },
+                { name: 'Revenue Events', path: '/revenue/events', superAdminOnly: false },
+                { name: 'Payouts', path: '/revenue/payouts', superAdminOnly: false },
+                { name: 'Earning Plans', path: '/revenue/plans', superAdminOnly: true },
+                { name: 'Revenue Config', path: '/revenue/config', superAdminOnly: true },
+                { name: 'Activity Feed', path: '/activity', superAdminOnly: true },
+                { name: 'Audit Log', path: '/revenue/audit-log', superAdminOnly: false },
             ]
         },
         { name: 'Reported Files', path: '/reported-files', icon: AlertTriangle, superAdminOnly: false },
@@ -80,22 +80,24 @@ export const DashboardLayout = () => {
                                         </button>
                                         {isExpanded && (
                                             <ul className="mt-1 space-y-1 pl-11 pr-2">
-                                                {item.subItems.map(subItem => {
-                                                    const isSubActive = location.pathname === subItem.path || (subItem.path !== '/revenue' && location.pathname.startsWith(subItem.path));
-                                                    return (
-                                                        <li key={subItem.path}>
-                                                            <Link
-                                                                to={subItem.path}
-                                                                className={`block px-3 py-2 rounded-md text-sm transition-all duration-200 ${isSubActive
-                                                                    ? 'bg-blue-50 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300 font-medium'
-                                                                    : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800/50'
-                                                                    }`}
-                                                            >
-                                                                {subItem.name}
-                                                            </Link>
-                                                        </li>
-                                                    );
-                                                })}
+                                                {item.subItems
+                                                    .filter(subItem => !subItem.superAdminOnly || superAdmin)
+                                                    .map(subItem => {
+                                                        const isSubActive = location.pathname === subItem.path || (subItem.path !== '/revenue' && location.pathname.startsWith(subItem.path));
+                                                        return (
+                                                            <li key={subItem.path}>
+                                                                <Link
+                                                                    to={subItem.path}
+                                                                    className={`block px-3 py-2 rounded-md text-sm transition-all duration-200 ${isSubActive
+                                                                        ? 'bg-blue-50 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300 font-medium'
+                                                                        : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800/50'
+                                                                        }`}
+                                                                >
+                                                                    {subItem.name}
+                                                                </Link>
+                                                            </li>
+                                                        );
+                                                    })}
                                             </ul>
                                         )}
                                     </li>

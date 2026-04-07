@@ -42,6 +42,14 @@ function App() {
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/reported-files" element={<ReportedFiles />} />
 
+              <Route path="/revenue" element={<RevenueOverview />} />
+              <Route path="/revenue/events" element={<RevenueEvents />} />
+              <Route path="/revenue/events/:id" element={<RevenueEventDetails />} />
+              <Route path="/revenue/payouts" element={<Payouts />} />
+              <Route path="/revenue/payouts/:id" element={<PayoutDetails />} />
+              <Route path="/revenue/audit-log" element={<AuditLog />} />
+
+
               {/* Super admin only */}
               <Route element={<SuperAdminRoute />}>
                 <Route path="/users" element={<UsersManagement />} />
@@ -51,16 +59,16 @@ function App() {
                 <Route path="/file/:id" element={<FilePreview />} />
                 <Route path="/user/:userId/files/:fileType" element={<UserFileList />} />
                 <Route path="/user/:userId/affiliates" element={<UserAffiliates />} />
-                <Route path="/revenue" element={<RevenueOverview />} />
+                {/* <Route path="/revenue" element={<RevenueOverview />} /> */}
                 <Route path="/activity" element={<ActivityFeed />} />
-                <Route path="/revenue/events" element={<RevenueEvents />} />
-                <Route path="/revenue/events/:id" element={<RevenueEventDetails />} />
-                <Route path="/revenue/payouts" element={<Payouts />} />
-                <Route path="/revenue/payouts/:id" element={<PayoutDetails />} />
+                {/* <Route path="/revenue/events" element={<RevenueEvents />} /> */}
+                {/* <Route path="/revenue/events/:id" element={<RevenueEventDetails />} /> */}
+                {/* <Route path="/revenue/payouts" element={<Payouts />} /> */}
+                {/* <Route path="/revenue/payouts/:id" element={<PayoutDetails />} /> */}
                 <Route path="/revenue/users/:id" element={<UserEarningProfileView />} />
                 <Route path="/revenue/config" element={<RevenueConfig />} />
                 <Route path="/revenue/plans" element={<RevenuePlans />} />
-                <Route path="/revenue/audit-log" element={<AuditLog />} />
+                {/* <Route path="/revenue/audit-log" element={<AuditLog />} /> */}
               </Route>
             </Route>
           </Route>
