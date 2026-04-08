@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { UserEarningProfile, RevenueEvent, earningService } from '../services/earning.service';
+import { UserEarningProfile, earningService } from '../services/earning.service';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
@@ -18,15 +18,6 @@ import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Toolti
 import { useMemo } from 'react';
 
 type ActionType = 'suspend' | 'reinstate' | 'block-payouts' | 'unblock-payouts' | 'override-plan' | null;
-
-const EVENT_STATUS_COLORS: Record<string, string> = {
-    PENDING: 'bg-amber-100 text-amber-800',
-    APPROVED: 'bg-emerald-100 text-emerald-800',
-    REJECTED: 'bg-red-100 text-red-800',
-    PAYABLE: 'bg-blue-100 text-blue-800',
-    IN_PAYOUT: 'bg-violet-100 text-violet-800',
-    PAID: 'bg-indigo-100 text-indigo-800',
-};
 
 export const UserEarningProfileView = () => {
     const { id } = useParams<{ id: string }>();
