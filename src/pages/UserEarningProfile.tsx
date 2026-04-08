@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { UserEarningProfile, RevenueEvent, earningService } from '../services/earning.service';
-import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Badge } from '../components/ui/badge';
@@ -9,9 +9,13 @@ import {
     Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription
 } from '../components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
-import { ArrowLeft, AlertTriangle, CheckCircle, Ban, DollarSign } from 'lucide-react';
+import { ArrowLeft, AlertTriangle, CheckCircle, Ban, DollarSign, Mail, Phone, Calendar, Shield, User as UserIcon, Eye } from 'lucide-react';
 import { format } from 'date-fns';
-import { convertUnits } from '../utils';
+import { convertUnits, formatDate } from '../utils';
+import * as userService from '../services/user.service';
+import { User } from '../types';
+import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from "recharts";
+import { useMemo } from 'react';
 
 type ActionType = 'suspend' | 'reinstate' | 'block-payouts' | 'unblock-payouts' | 'override-plan' | null;
 
@@ -28,6 +32,7 @@ export const UserEarningProfileView = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
     const [profile, setProfile] = useState<UserEarningProfile | null>(null);
+    const [fullUser, setFullUser] = useState<User | null>(null);
     const [loading, setLoading] = useState(true);
 
     // Dialog state
@@ -46,8 +51,12 @@ export const UserEarningProfileView = () => {
         if (!id) return;
         try {
             setLoading(true);
-            const data = await earningService.getUserEarningProfile(id);
-            setProfile(data);
+            const [profileData, userData] = await Promise.all([
+                earningService.getUserEarningProfile(id),
+                userService.getUserById(id)
+            ]);
+            setProfile(profileData);
+            if (userData) setFullUser(userData);
         } catch (error) {
             console.error('Failed to fetch user earning profile', error);
         } finally {
@@ -106,7 +115,23 @@ export const UserEarningProfileView = () => {
         }
     };
 
-    if (loading) return <div className="p-8 text-slate-500">Loading...</div>;
+    const engagementData = useMemo(() => {
+        if (!fullUser) return [];
+        return [
+            { name: 'Engagement', Views: fullUser.totalViews, Downloads: fullUser.totalDownloads, Affiliates: fullUser.referenceUserCount }
+        ];
+    }, [fullUser]);
+
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center p-12">
+                <div className="animate-pulse flex flex-col items-center space-y-4">
+                    <div className="h-12 w-12 rounded-full border-4 border-blue-600 border-t-transparent animate-spin"></div>
+                    <div className="text-slate-500 font-medium">Loading user profile...</div>
+                </div>
+            </div>
+        );
+    }
     if (!profile) return <div className="p-8 text-slate-500">Earning Profile not found</div>;
 
     return (
@@ -148,6 +173,119 @@ export const UserEarningProfileView = () => {
                     </Button>
                 </div>
             </div>
+
+            {fullUser && (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 animate-in fade-in slide-in-from-top-4 duration-500">
+                    {/* Profile Section */}
+                    <Card className="md:col-span-1 border-0 shadow-sm ring-1 ring-slate-200 dark:ring-slate-800 bg-white dark:bg-slate-950">
+                        <CardHeader className="pb-4 border-b border-slate-100 dark:border-slate-800">
+                            <div className="flex justify-between items-start">
+                                <div className="flex items-center gap-4">
+                                    <div className="h-16 w-16 relative rounded-2xl shadow-sm overflow-hidden flex-shrink-0">
+                                        <div className="absolute inset-0 bg-gradient-to-br from-blue-500 to-indigo-600 text-white flex items-center justify-center text-2xl font-bold">
+                                            {(fullUser.name ?? '?').charAt(0)}
+                                        </div>
+                                        {fullUser.profilePic && (
+                                            <img
+                                                src={fullUser.profilePic}
+                                                alt={fullUser.name}
+                                                className="absolute inset-0 h-full w-full object-cover"
+                                            />
+                                        )}
+                                    </div>
+                                    <div className="min-w-0">
+                                        <CardTitle className="text-xl truncate">{fullUser.name}</CardTitle>
+                                        <CardDescription className="text-xs uppercase tracking-wider mt-1 font-medium truncate">ID: {fullUser.id.split('-')[0]}...</CardDescription>
+                                    </div>
+                                </div>
+                                {fullUser.isAdmin && <Badge className="bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300 hover:bg-blue-200"><Shield className="w-3 h-3 mr-1" /> Admin</Badge>}
+                            </div>
+                        </CardHeader>
+                        <CardContent className="pt-6 space-y-4">
+                            <div className="flex items-center gap-3 text-sm">
+                                <div className="p-2 bg-slate-50 dark:bg-slate-900 rounded-md shrink-0">
+                                    <Mail className="h-4 w-4 text-slate-500" />
+                                </div>
+                                <span className="flex-1 font-medium truncate" title={fullUser.email || 'N/A'}>{fullUser.email || 'N/A'}</span>
+                                {fullUser.isEmailVerified ? (
+                                    <Badge variant="secondary" className="shrink-0 bg-green-100/60 text-green-800 dark:bg-green-900/30 dark:text-green-400 font-normal">Verified</Badge>
+                                ) : (
+                                    <Badge variant="outline" className="shrink-0 text-slate-500 dark:text-slate-400 font-normal">Unverified</Badge>
+                                )}
+                            </div>
+                            <div className="flex items-center gap-3 text-sm">
+                                <div className="p-2 bg-slate-50 dark:bg-slate-900 rounded-md shrink-0">
+                                    <Phone className="h-4 w-4 text-slate-500" />
+                                </div>
+                                <span className="flex-1 font-medium truncate" title={`${fullUser.countryCode || ''} ${fullUser.phoneNumber || ''}`.trim() || 'N/A'}>{fullUser.countryCode} {fullUser.phoneNumber || 'N/A'}</span>
+                                {fullUser.isPhoneVerified ? (
+                                    <Badge variant="secondary" className="shrink-0 bg-green-100/60 text-green-800 dark:bg-green-900/30 dark:text-green-400 font-normal">Verified</Badge>
+                                ) : (
+                                    <Badge variant="outline" className="shrink-0 text-slate-500 dark:text-slate-400 font-normal">Unverified</Badge>
+                                )}
+                            </div>
+                            <div className="flex items-center gap-3 text-sm">
+                                <div className="p-2 bg-slate-50 dark:bg-slate-900 rounded-md">
+                                    <Calendar className="h-4 w-4 text-slate-500" />
+                                </div>
+                                <span>Joined: <span className="font-medium">{formatDate(fullUser.createdAt)}</span></span>
+                            </div>
+                            <div className="flex items-center gap-3 text-sm">
+                                <div className="p-2 bg-slate-50 dark:bg-slate-900 rounded-md">
+                                    <UserIcon className="h-4 w-4 text-slate-500" />
+                                </div>
+                                <span>Status:
+                                    <span className={`ml-2 font-semibold ${!fullUser.deletedAt ? 'text-green-600 dark:text-green-400' : 'text-red-500'}`}>
+                                        {!fullUser.deletedAt ? "Active" : "Soft Deleted"}
+                                    </span>
+                                </span>
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    {/* Engagement Section */}
+                    <Card className="md:col-span-2 border-0 shadow-sm ring-1 ring-slate-200 dark:ring-slate-800 bg-white dark:bg-slate-950">
+                        <CardHeader>
+                            <CardTitle>Engagement Summary</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="grid grid-cols-3 gap-4 mb-6">
+                                <div className="bg-orange-50/50 dark:bg-orange-950/20 p-5 rounded-2xl border border-orange-100 dark:border-orange-900/30">
+                                    <div className="text-orange-600/80 dark:text-orange-500/80 font-semibold text-xs tracking-wider uppercase mb-1">Total Views</div>
+                                    <div className="text-3xl font-bold text-orange-600 dark:text-orange-400">{fullUser.totalViews}</div>
+                                </div>
+                                <div className="bg-teal-50/50 dark:bg-teal-950/20 p-5 rounded-2xl border border-teal-100 dark:border-teal-900/30">
+                                    <div className="text-teal-600/80 dark:text-teal-500/80 font-semibold text-xs tracking-wider uppercase mb-1">Total Downloads</div>
+                                    <div className="text-3xl font-bold text-teal-600 dark:text-teal-400">{fullUser.totalDownloads}</div>
+                                </div>
+                                <div
+                                    className="bg-purple-50/50 dark:bg-purple-950/20 p-5 rounded-2xl border border-purple-100 dark:border-purple-900/30 cursor-pointer hover:bg-purple-100/60 dark:hover:bg-purple-950/40 transition-colors relative"
+                                    onClick={() => navigate(`/user/${fullUser.id}/affiliates`)}
+                                >
+                                    <div className="font-semibold text-xs tracking-wider uppercase mb-1 text-purple-600/60 dark:text-purple-400/60">Affiliates</div>
+                                    <div className="text-3xl font-bold text-purple-600 dark:text-purple-400">{fullUser.referenceUserCount}</div>
+                                    <Eye className="absolute top-3 right-3 w-4 h-4 opacity-40 text-purple-600 dark:text-purple-400" />
+                                </div>
+                            </div>
+
+                            <div className="h-[200px] w-full mt-4">
+                                <ResponsiveContainer width="100%" height="100%">
+                                    <BarChart data={engagementData} layout="vertical" margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                                        <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} stroke="#e2e8f0" />
+                                        <XAxis type="number" hide />
+                                        <YAxis dataKey="name" type="category" hide />
+                                        <Tooltip cursor={{ fill: 'transparent' }} contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }} />
+                                        <Legend iconType="circle" />
+                                        <Bar dataKey="Views" fill="#f97316" radius={[0, 6, 6, 0]} maxBarSize={30} />
+                                        <Bar dataKey="Downloads" fill="#14b8a6" radius={[0, 6, 6, 0]} maxBarSize={30} />
+                                        <Bar dataKey="Affiliates" fill="#9333ea" radius={[0, 6, 6, 0]} maxBarSize={30} />
+                                    </BarChart>
+                                </ResponsiveContainer>
+                            </div>
+                        </CardContent>
+                    </Card>
+                </div>
+            )}
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <Card className="col-span-1 lg:col-span-2">
@@ -232,7 +370,7 @@ export const UserEarningProfileView = () => {
             )}
 
             {/* Recent Events */}
-            <div>
+            {/* <div>
                 <h3 className="font-semibold text-xl mb-3">Recent Revenue Events</h3>
                 <div className="rounded-md border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 overflow-hidden text-sm">
                     <table className="w-full text-left">
@@ -273,7 +411,7 @@ export const UserEarningProfileView = () => {
                         </tbody>
                     </table>
                 </div>
-            </div>
+            </div> */}
 
             {/* Recent Payouts */}
             <div>
@@ -300,7 +438,7 @@ export const UserEarningProfileView = () => {
                                         <td className="px-4 py-2 text-xs">{p.paid_at || p.paidAt ? format(new Date((p.paid_at || p.paidAt) as string), 'MMM dd, yyyy') : '—'}</td>
                                         <td className="px-4 py-2 text-xs font-mono">
                                             {acctNum
-                                                ? <span>****{acctNum.slice(-4)}{ifsc ? ` · ${ifsc}` : ''}</span>
+                                                ? <span>{acctNum}{ifsc ? ` · ${ifsc}` : ''}</span>
                                                 : <span className="text-slate-400">Unavailable</span>}
                                         </td>
                                         <td className="px-4 py-2 text-right font-medium">${convertUnits(p.total_units || p.totalUnits)}</td>
