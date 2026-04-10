@@ -1,3 +1,15 @@
+export interface EarningStat {
+    count: number;
+    totalUnits: string;
+    totalUsd: string;
+}
+
+export interface EarningStats {
+    pending: EarningStat;
+    approved: EarningStat;
+    payable: EarningStat;
+}
+
 export interface User {
     id: string;
     email: string | null;
@@ -41,6 +53,7 @@ export interface User {
         planType: string;
         selectedAt: string;
     } | null;
+    earningStats: EarningStats | null;
     storageLimit: {
         usedImageStorageBytes: number;
         usedVideoStorageBytes: number;

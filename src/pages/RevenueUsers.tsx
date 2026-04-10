@@ -98,6 +98,9 @@ export const RevenueUsers = () => {
                                 <TableHead>User</TableHead>
                                 <TableHead>Plan Info</TableHead>
                                 <TableHead>Status</TableHead>
+                                <TableHead>Pending</TableHead>
+                                <TableHead>Approved</TableHead>
+                                <TableHead>Payable</TableHead>
                                 <TableHead>Storage</TableHead>
                                 <TableHead>Joined</TableHead>
                                 <TableHead className="text-right">Actions</TableHead>
@@ -106,7 +109,7 @@ export const RevenueUsers = () => {
                         <TableBody>
                             {loading && users.length === 0 ? (
                                 <TableRow>
-                                    <TableCell colSpan={6} className="h-32 text-center">
+                                    <TableCell colSpan={8} className="h-32 text-center">
                                         <div className="flex items-center justify-center space-x-2">
                                             <div className="h-4 w-4 animate-spin rounded-full border-2 border-slate-300 border-t-blue-600"></div>
                                             <span className="text-slate-500">Loading revenue users...</span>
@@ -115,7 +118,7 @@ export const RevenueUsers = () => {
                                 </TableRow>
                             ) : users.length === 0 ? (
                                 <TableRow>
-                                    <TableCell colSpan={6} className="text-center py-12 text-slate-500">
+                                    <TableCell colSpan={8} className="text-center py-12 text-slate-500">
                                         No users with earning plans found.
                                     </TableCell>
                                 </TableRow>
@@ -156,6 +159,42 @@ export const RevenueUsers = () => {
                                                     <Badge variant="destructive" className="bg-red-50 text-red-700 dark:bg-red-900/20 dark:text-red-400 text-[10px] py-0 px-1.5 border-none">Payout blocked</Badge>
                                                 )}
                                             </div>
+                                        </TableCell>
+                                        <TableCell>
+                                            {user.earningStats ? (
+                                                <div className="flex flex-col">
+                                                    <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                                                        ${parseFloat(user.earningStats.pending.totalUsd).toFixed(2)}
+                                                    </span>
+                                                    <span className="text-[10px] text-slate-400">{user.earningStats.pending.count} events</span>
+                                                </div>
+                                            ) : (
+                                                <span className="text-slate-400 text-xs italic">-</span>
+                                            )}
+                                        </TableCell>
+                                        <TableCell>
+                                            {user.earningStats ? (
+                                                <div className="flex flex-col">
+                                                    <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">
+                                                        ${parseFloat(user.earningStats.approved.totalUsd).toFixed(2)}
+                                                    </span>
+                                                    <span className="text-[10px] text-slate-400">{user.earningStats.approved.count} events</span>
+                                                </div>
+                                            ) : (
+                                                <span className="text-slate-400 text-xs italic">-</span>
+                                            )}
+                                        </TableCell>
+                                        <TableCell>
+                                            {user.earningStats ? (
+                                                <div className="flex flex-col">
+                                                    <span className="text-xs font-semibold text-blue-600 dark:text-blue-400">
+                                                        ${parseFloat(user.earningStats.payable.totalUsd).toFixed(2)}
+                                                    </span>
+                                                    <span className="text-[10px] text-slate-400">{user.earningStats.payable.count} events</span>
+                                                </div>
+                                            ) : (
+                                                <span className="text-slate-400 text-xs italic">-</span>
+                                            )}
                                         </TableCell>
                                         <TableCell>
                                             <div className="text-xs text-slate-600 dark:text-slate-400">

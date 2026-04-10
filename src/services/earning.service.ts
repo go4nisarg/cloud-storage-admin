@@ -464,6 +464,20 @@ export const earningService = {
         return response.data.data;
     },
 
+    rejectPendingByPercentage: async (userId: string, payload: { percentage: number; reason: string; note?: string }) => {
+        const response = await apiClient.patch<{
+            status: number;
+            message: string;
+            data: {
+                totalPending: number;
+                percentage: number;
+                rejected: number;
+                remaining: number;
+            }
+        }>(`/web/earning/users/${userId}/reject-pending-by-percentage`, payload);
+        return response.data.data;
+    },
+
     // Config
     getConfig: async () => {
         const response = await apiClient.get<{ data: SystemConfigResponse }>('/web/earning/config');
